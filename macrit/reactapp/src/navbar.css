@@ -36,7 +36,10 @@ a{
     display: flex;
     align-items: center;
     justify-content: space-around;
-    gap: 3rem;
+    gap: 7rem;
+    margin: 0;
+    max-height: 250px;
+    justify-self: end;
 }
 
 .nav_toggle div{
@@ -59,10 +62,30 @@ a{
         position: fixed;
         top: 7vh;
         right: 0;
-        width: 50%;
+        width: 20%;
         height: 93vh;
         background: rgb(0,28,73);
         flex-direction: column;
         transform: translateX(100%);
+        transition: 0.5s ease-in;
+        gap: 1rem;
+        padding-left: 10px;
+        padding-right: 10px;
     }
+}
+
+.nav_active {
+    transform: translateX(0%);
+}
+
+.toggle .line1 {
+    transform: rotate(-45deg) translate(-4px,5px);
+}
+
+.toggle .line2 {
+    opacity: 0;
+}
+
+.toggle .line3 {
+    transform: rotate(45deg) translate(-4px,-5px);
 }
