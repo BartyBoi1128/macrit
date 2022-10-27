@@ -3,7 +3,6 @@ from django.db import models
 # Create your models here.
 class User(models.Model):
 	userid = models.IntegerField(primary_key=True)
-	profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
 	password = models.CharField(max_length=50)
 	email = models.EmailField(max_length=254)
 
@@ -11,10 +10,9 @@ class User(models.Model):
 		return self.userid + ' ' + self.email
 
 class Profile(models.Model):
+	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	first_name = models.CharField(max_length=50)
 	second_name = models.CharField(max_length=100)
-	diary = models.OneToOneField(Diary, on_delete=models.CASCADE)
-	shopping_list = models.OneToOneField(ShoppingList, on_delete=models.CASCADE)
 	height = models.FloatField()
 	weight = models.FloatField()
 	BMI = models.FloatField()
@@ -24,33 +22,50 @@ class Profile(models.Model):
 	weight_goal_time = models.DateField()
 	vegeterian = models.BooleanField(default=False)
 	vegan = models.BooleanField(default=False)
-	health_condtions = models.ManyToManyField(HealthCondition)
+
+	def __str__(self):
+		return self.first_name + ' ' + self.second_name
+
 
 class HealthCondition(models.Model):
 	abstract = True
 	health_condition = models.CharField(max_length=100)
 	doesUserHave = models.BooleanField(default=False)
+	profile = models.ManyToManyField(Profile)
 
 class Diary(models.Model):
-	intake = ManyToManyField(Ingredient)
-	macros = ManyToManyField(Macro)
+	profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
+	dateOfIntake = models.DateField(primary_key=True)
+
+	def __str__(self):
+		return self.dateOfIntake
 
 class Ingredient(models.Model):
-	name = models.CharField(max_length=100)
-	macros = ManyToManyField(Macro)
+	nameOfIngredient = models.CharField(max_length=100, primary_key=True)
+	intake = models.ManyToManyField(Diary, on_delete=models.CASCADE)
 	amountOfIngredient = models.FloatField()
 
+	def __str__(self):
+		return self.nameOfIngredient
+
 class ShoppingList(models.Model):
+	profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
 	ingredients = models.ManyToManyField(Ingredient)
 
 class Recipe(models.Model):
-	ingredients = ManyToManyField(Ingredient)
+	nameOfRecipe = models.CharField(max_length=100, primary_key=True)
+	ingredients = models.ManyToManyField(Ingredient)
 	instructions = models.TextField()
-	tags = ListCharField( 
-		base_field = CharField(max_length=254),
+	tags = models.ListCharField( 
+		base_field = models.CharField(max_length=254),
 		size=100,)
 
+	def __str__(self):
+		return self.nameOfRecipe
+
 class Macro(models.Model):
+	diary = models.ManyToManyField(Diary)
+	ingredient = models.ManyToManyField(Ingredient)
 	abstract = True
 	calories = models.FloatField()
 	fat = models.FloatField()
