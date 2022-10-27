@@ -42,7 +42,7 @@ class Diary(models.Model):
 
 class Ingredient(models.Model):
 	nameOfIngredient = models.CharField(max_length=100, primary_key=True)
-	intake = models.ManyToManyField(Diary, on_delete=models.CASCADE)
+	intake = models.ManyToManyField(Diary)
 	amountOfIngredient = models.FloatField()
 
 	def __str__(self):
@@ -56,9 +56,7 @@ class Recipe(models.Model):
 	nameOfRecipe = models.CharField(max_length=100, primary_key=True)
 	ingredients = models.ManyToManyField(Ingredient)
 	instructions = models.TextField()
-	tags = models.ListCharField( 
-		base_field = models.CharField(max_length=254),
-		size=100,)
+	tags = models.CharField(max_length=254)
 
 	def __str__(self):
 		return self.nameOfRecipe
