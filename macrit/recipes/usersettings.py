@@ -1,4 +1,4 @@
-from controller import *
+from service import *
 
 class usersettings:
     def __init__(self):
