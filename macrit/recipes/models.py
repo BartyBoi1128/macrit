@@ -26,11 +26,11 @@ class Profile(models.Model):
 	def __str__(self):
 		return self.first_name + ' ' + self.second_name
 
-	def update(self, weight, height, weightGoal , weightGoalTime, BMI):
+	def update(self, weight, height, weight_goal , weight_goal_time, BMI):
 		self.height = height
 		self.weight = weight
-		self.weight_goal = weightGoal
-		self.weight_goal_time = weightGoalTime
+		self.weight_goal = weight_goal
+		self.weight_goal_time = weight_goal_time
 		self.BMI = BMI
 
 class HealthCondition(models.Model):
