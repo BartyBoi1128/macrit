@@ -56,38 +56,44 @@ class State(ABC):
 	
 class Subscribe(State):
     # if up button is pushed, move upwards then it changes its state to second floor.
-    def subscribe(self) -> None:
-        print("You have subscribed")
+    def unsubscribe(self) -> None:
+        print("You have unsubscribed")
         self.user.setUser(Unsubscribe())
 
-    def unsubscribe(self) -> None:
-        print("You are already unsubscribed")
+    # 
+    def subscribe(self) -> None:
+        print("You are already subscribed")
 
 
 class Unsubscribe(State):
     # if up button is pushed, move upwards then it changes its state to second floor.
-    def unsubscribe(self) -> None:
-        print("You have unsub")
+    def subscribe(self) -> None:
+        print("You have subscribed")
         self.user.setUser(Subscribe())
 
-    def subscribe(self) -> None:
-        print("You have already subscribed")
+    def unsubscribe(self) -> None:
+        print("You have already unsubscribed")
         #output error message
 
-##This will be used to test the state initially
 
+##This is test code if it was run seperately
 # if __name__ == "__main__":
 #     # The client code.
 
-#     myUser = User(Subscribe())
+#     myUser = User(Unsubscribe())
 #     myUser.presentState()
 
 #     myUser.subscribe()
+
+#     myUser.presentState()
 
 #     myUser.unsubscribe()
 
 #     myUser.presentState()
 
+#     myUser.unsubscribe()
+
+#     myUser.presentState()
 
 
 	
