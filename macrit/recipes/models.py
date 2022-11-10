@@ -40,42 +40,40 @@ class HealthCondition(models.Model):
 	profile = models.ManyToManyField(Profile)
 
 class Diary(models.Model):
-	profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
-	dateOfIntake = models.DateField(primary_key=True)
+	profile = models.OneToOneField(Profile, on_delete=models.CASCADE, primary_key=True)
 
 	def __str__(self):
-		return self.dateOfIntake
+		return self.profile
 
-class Ingredient(models.Model):
+class Food(models.Model):
 	nameOfIngredient = models.CharField(max_length=100, primary_key=True)
 	intake = models.ManyToManyField(Diary)
 	amountOfIngredient = models.FloatField()
+	calories = models.FloatField()
+	fat = models.FloatField()
+	saturates = models.FloatField()
+	sugar = models.FloatField()
+	salt = models.FloatField()
+	protein = models.FloatField()
+	carbs = models.FloatField()
+	fibre = models.FloatField()
+
+	class Meta:
+		abstract = True
 
 	def __str__(self):
 		return self.nameOfIngredient
 
 class ShoppingList(models.Model):
 	profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
-	ingredients = models.ManyToManyField(Ingredient)
+	ingredients = models.ManyToManyField(Food)
 
-class Recipe(models.Model):
+class Recipe(Food):
 	nameOfRecipe = models.CharField(max_length=100, primary_key=True)
-	ingredients = models.ManyToManyField(Ingredient)
+	ingredients = models.ManyToManyField(Food)
 	instructions = models.TextField()
 	tags = models.CharField(max_length=254)
 
 	def __str__(self):
 		return self.nameOfRecipe
 
-class Macro(models.Model):
-	diary = models.ManyToManyField(Diary)
-	ingredient = models.ManyToManyField(Ingredient)
-	abstract = True
-	calories = models.FloatField()
-	fat = models.FloatField()
-	saturates = models.FloatField()
-	sugars = models.FloatField()
-	salt = models.FloatField()
-	protein = models.FloatField()
-	carbohydrates = models.FloatField()
-	fibre = models.FloatField()
