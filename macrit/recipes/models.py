@@ -3,12 +3,6 @@ from __future__ import annotations
 from django.db import models
 from abc import ABC, abstractmethod
 
-# Create your models here.
-from __future__ import annotations
-from abc import ABC, abstractmethod
-
-# Create your models here.
-
 #user class is initiated with default state
 class User(models.Model):
 
