@@ -7,6 +7,8 @@ class usersettings:
         self.profile_height = None
         self.profile_weight_goal = None
         self.profile_weight_goal_time = None
+        self.profile_age = None
+        self.profile_gender = None
         self.profile_bmi = bmiCalc(usersettings.profile_height,usersettings.profile_weight)
 
     def attach(self,observer):
@@ -19,9 +21,15 @@ class usersettings:
 
     def notify(self):
         for observer in self._observers:
-            observer.update(self.profile_weight,self.profile_height,self.profile_weight_goal,self.profile_weight_goal_time, self.profile_bmi)
+            observer.update(observer, self.profile_age, self.profile_gender, self.profile_weight,self.profile_height,self.profile_weight_goal,self.profile_weight_goal_time, self.profile_bmi)
 
     #Setters
+    def setAge(self, newAge):
+        self.profile_age = newAge
+
+    def setGender(self, newGender):
+        self.profile_gender = newGender
+
     def setWeight(self,newWeight):
         self.profile_weight = newWeight
         bmiCalc(self.profile_height, self.profile_weight)
@@ -37,6 +45,12 @@ class usersettings:
         self.profile_weight_goal_time = newGoalTime
 
     #Getters
+    def getAge(self):
+        return self.profile_age
+
+    def getGender(self):
+        return self.profile_gender
+
     def getWeight(self):
         return self.profile_weight
 

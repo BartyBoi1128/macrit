@@ -28,7 +28,7 @@ function Navbar() {
                     </a>
                 </li>
                 <li className="nav_item">
-                    <a href="#" className="nav_link">
+                    <a href="/settings" className="nav_link">
                         Settings
                     </a>
                 </li>
