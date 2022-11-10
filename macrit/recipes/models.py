@@ -1,13 +1,102 @@
+
+from __future__ import annotations
 from django.db import models
+from abc import ABC, abstractmethod
 
 # Create your models here.
+from __future__ import annotations
+from abc import ABC, abstractmethod
+
+# Create your models here.
+
+#user class is initiated with default state
 class User(models.Model):
+
+	_state = None
+
 	userid = models.IntegerField(primary_key=True)
 	password = models.CharField(max_length=50)
 	email = models.EmailField(max_length=254)
 
+	def __init__(self, state: State) -> None:
+		self.setUser(state)
+
 	def __str__(self):
-		return self.userid + ' ' + self.email
+		return self.userid + " " + self.email
+
+    #Changes the state of the object
+	def setUser(self, state: State):
+		self._state = state
+		self._state.user = self
+
+    #Get the present state
+	def presentState(self):
+		print(f"Elevator is in {type(self._state).__name__}")
+
+    #Methods to execute functionality. These are called depending on the state of the object and when they are called
+	def subscribe(self):
+		self._state.subscribe()
+
+	def unsubscribe(self):
+		self._state.unsubscribe()
+
+# Common state class for all states to be called
+class State(ABC):
+	@property
+	def user(self) -> User:
+		return self._user
+
+	@user.setter
+	def user(self, user: User) -> None:
+		self._user = user
+
+
+	@abstractmethod
+	def subscribe(self) -> None:
+		pass
+	
+	@abstractmethod
+	def unsubscribe(self) -> None:
+		pass
+
+	
+class Subscribe(State):
+    # if up button is pushed, move upwards then it changes its state to second floor.
+    def subscribe(self) -> None:
+        print("You have subscribed")
+        self.user.setUser(Unsubscribe())
+
+    def unsubscribe(self) -> None:
+        print("You are already unsubscribed")
+
+
+class Unsubscribe(State):
+    # if up button is pushed, move upwards then it changes its state to second floor.
+    def unsubscribe(self) -> None:
+        print("You have unsub")
+        self.user.setUser(Subscribe())
+
+    def subscribe(self) -> None:
+        print("You have already subscribed")
+        #output error message
+
+##This will be used to test the state initially
+
+# if __name__ == "__main__":
+#     # The client code.
+
+#     myUser = User(Subscribe())
+#     myUser.presentState()
+
+#     myUser.subscribe()
+
+#     myUser.unsubscribe()
+
+#     myUser.presentState()
+
+
+
+	
 
 class Profile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
