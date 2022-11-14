@@ -6,14 +6,14 @@ from abc import ABC, abstractmethod
 #user class is initiated with default state
 class User(models.Model):
 
-	_state = None
-
 	userid = models.IntegerField(primary_key=True)
 	password = models.CharField(max_length=50)
 	email = models.EmailField(max_length=254)
 
-	def __init__(self, state: State) -> None:
-		self.setUser(state)
+	def create(cls, state: State, userid, password, email):
+		cls.setUser(Unsubscribe())		
+		
+		return cls(userid=userid, email=email, password=password, state=state)
 
 	def __str__(self):
 		return self.userid + " " + self.email
