@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import HttpResponse, redirect, render
 from django.template import loader
-from models import User
-from models import Profile
+from models import Profile, User
 from service import *
+
 # Create your views here.
 #from django.http import HttpResponse
 
@@ -14,3 +15,12 @@ def index(request):
 
 def settings(request):
     return render(request,'recipes/index.html', {'element_id': "settings"})
+
+def login(request):
+    context = {}
+    return render(request, 'recipes/login.html', context)#{'element_id': "login"})
+
+def register(request):
+    form = UserCreationForm
+    context = {'form': form}
+    return render(request, 'recipes/register.html', context)#{'element_id': "register"})

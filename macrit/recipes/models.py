@@ -150,8 +150,8 @@ class Food(models.Model):
 	carbs = models.FloatField()
 	fibre = models.FloatField()
 
-	class Meta:
-		abstract = True
+	#class Meta:
+		#abstract = True
 
 	def __str__(self):
 		return self.nameOfIngredient
@@ -162,7 +162,7 @@ class ShoppingList(models.Model):
 
 class Recipe(Food):
 	nameOfRecipe = models.CharField(max_length=100, primary_key=True)
-	ingredients = models.ManyToManyField(Food)
+	ingredients = models.ManyToManyField(Food, related_name='+')
 	instructions = models.TextField()
 	tags = models.CharField(max_length=254)
 

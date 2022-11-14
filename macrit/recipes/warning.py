@@ -36,7 +36,7 @@ class IMacrosWarning(metaclass=ABCMeta):
 
     @abstractstaticmethod
     def warningMessage():
-        return("This is the default macros warning")
+        pass
 
 class macrosWarning(IMacrosWarning):
 
@@ -48,6 +48,3 @@ class macrosWarning(IMacrosWarning):
 
     def warningMessage(self):
         return("Warning: This recipe will send you over your daily recommended %s intake." % self.type)
-
-def ahsdfuh():
-    print("aaaaah")
