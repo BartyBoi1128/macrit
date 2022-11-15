@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+    <h3>Recipies</h3>
+    {% comment %} {% for diary_entries in diary_list.profile.all%}
+        {% for %}
+        <div class="card">
+            <div class="card-header">
+                {{diary_entries}}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{}}  </h5>
+                <p class="card-text">Add any information we want here</p>
+
+                <button type="submit" name="AddToDiary" value="AddToDiary">&nbsp;Add To Diary</button>
+            </div>
+        </div>
+            <div class = "container">
+            <ul>
+                <li>diary entries : {{diary_entries}}</li>
+
+        
+            </div>
+
+        <ul>
+            <li></li>
+        </ul>
+        {% endfor %} {% endcomment %}
+
+        <div class="card">
+            <div class="card-header">
+              Tomato
+            </div>
+            <div class="card-body">
+              <p class="card-text">Stats go in here</p>
+              <a href="#" class="btn btn-primary">Add To Diary</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              Apple
+            </div>
+            <div class="card-body">
+              <p class="card-text">Stats go in here</p>
+              <a href="#" class="btn btn-primary">Add To Diary</a>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              Spaghetti Bolognese
+            </div>
+            <div class="card-body">
+              <p class="card-text">Stats go in here</p>
+              <a href="#" class="btn btn-primary">Add To Diary</a>
+            </div>
+          </div>
+</html>

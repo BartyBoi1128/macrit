@@ -34,6 +34,15 @@ def login(request):
     context = {'form': form, 'verify': verify}
     return render(request, 'login.html', context)
 
+def diary(request):
+    # diary_list = diary.objects.all()
+    
+    # if request.method == "POST":
+    #     form = 
+    #     if request.POST.get(""):
+    #         return
+    return render(request, 'diary.html', {'diary_list' : diary_list})
+
 @csrf_exempt
 def register(request):
     form = UserCreationForm
