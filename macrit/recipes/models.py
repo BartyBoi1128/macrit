@@ -10,10 +10,10 @@ class User(models.Model):
 	password = models.CharField(max_length=50)
 	email = models.EmailField(max_length=254)
 
-	def create(cls, state: State, userid, password, email):
+	def create(cls, userid, password, email):
 		cls.setUser(Unsubscribe())		
 		
-		return cls(userid=userid, email=email, password=password, state=state)
+		return cls(userid=userid, email=email, password=password)
 
 	def __str__(self):
 		return self.userid + " " + self.email
@@ -135,7 +135,7 @@ class Diary(models.Model):
 	profile = models.OneToOneField(Profile, on_delete=models.CASCADE, primary_key=True)
 
 	def __str__(self):
-		return self.profile
+		return self.profile.first_name + " " + self.profile.second_name + "'s diary"
 
 class Food(models.Model):
 	nameOfIngredient = models.CharField(max_length=100, primary_key=True)
@@ -149,9 +149,6 @@ class Food(models.Model):
 	protein = models.FloatField()
 	carbs = models.FloatField()
 	fibre = models.FloatField()
-
-	#class Meta:
-		#abstract = True
 
 	def __str__(self):
 		return self.nameOfIngredient
