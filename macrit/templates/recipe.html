@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
     <h3>Recipies</h3>
-    {% comment %} {% for diary_entries in diary_list.profile.all%}
-        {% for %}
+    {% for recipe_entries in recipe_list %}
         <div class="card">
             <div class="card-header">
-                {{diary_entries}}
+                Recipe Name : {{recipe_entries}}
             </div>
             <div class="card-body">
-                <h5 class="card-title">{{}}  </h5>
-                <p class="card-text">Add any information we want here</p>
+                <h5 class="card-title">  </h5>
+                <p class="card-text">Add any information we want here
+                  <ul>
+                    <li>recipie entries : {{recipe_entries}}</li>
+                    <li>recipie entries : {{recipe_entries}}</li>
+                    <li>recipie entries : {{recipe_entries}}</li>
+                    <li>recipie entries : {{recipe_entries}}</li>
+                  <ul>
+                </p>
 
-                <button type="submit" name="AddToDiary" value="AddToDiary">&nbsp;Add To Diary</button>
+                <button type="submit" name="AddTorecipie" value="AddTorecipie">&nbsp;Add To Diary</button>
             </div>
         </div>
             <div class = "container">
-            <ul>
-                <li>diary entries : {{diary_entries}}</li>
-
-        
-            </div>
-
-        <ul>
+            
             <li></li>
         </ul>
-        {% endfor %} {% endcomment %}
+        {% endfor %}
 
-        <div class="card">
+        {% comment %} <div class="card">
             <div class="card-header">
               Tomato
             </div>
@@ -54,5 +54,5 @@
               <p class="card-text">Stats go in here</p>
               <a href="#" class="btn btn-primary">Add To Diary</a>
             </div>
-          </div>
+          </div> {% endcomment %}
 </html>

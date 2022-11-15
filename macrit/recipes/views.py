@@ -1,10 +1,11 @@
 from recipes.forms import UserCreationForm
 from django.shortcuts import HttpResponse, redirect, render
 from django.template import loader
-from recipes.models import User
+from recipes.models import User, Recipe
 from recipes.service import *
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
+
 
 # Create your views here.
 
@@ -34,14 +35,15 @@ def login(request):
     context = {'form': form, 'verify': verify}
     return render(request, 'login.html', context)
 
-def diary(request):
-    # diary_list = diary.objects.all()
+def recipes(request):
+    recipe_list = Recipe.objects.all()
+    
     
     # if request.method == "POST":
     #     form = 
     #     if request.POST.get(""):
     #         return
-    return render(request, 'diary.html', {'diary_list' : diary_list})
+    return render(request, 'recipe.html', {'recipe_list' : recipe_list})
 
 @csrf_exempt
 def register(request):
