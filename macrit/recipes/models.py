@@ -16,7 +16,7 @@ class User(models.Model):
 		return cls(userid=userid, email=email, password=password)
 
 	def __str__(self):
-		return self.userid + " " + self.email
+		return str(self.userid) + " " + self.email
 
     #Changes the state of the object
 	def setUser(self, state: State):
