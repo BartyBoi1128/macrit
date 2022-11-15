@@ -108,15 +108,9 @@ class HealthCondition(models.Model):
 	doesUserHave = models.BooleanField(default=False)
 	profile = models.ManyToManyField(Profile)
 
-class Diary(models.Model):
-	profile = models.OneToOneField(Profile, on_delete=models.CASCADE, primary_key=True)
-
-	def __str__(self):
-		return self.profile.first_name + " " + self.profile.second_name + "'s diary"
-
 class Food(models.Model):
 	nameOfIngredient = models.CharField(max_length=100, primary_key=True)
-	intake = models.ManyToManyField(Diary)
+	#intake = models.ManyToManyField(Diary, blank=True)
 	amountOfIngredient = models.FloatField()
 	calories = models.FloatField()
 	fat = models.FloatField()
@@ -129,6 +123,12 @@ class Food(models.Model):
 
 	def __str__(self):
 		return self.nameOfIngredient
+
+class Diary(models.Model):
+	profile = models.OneToOneField(Profile, on_delete=models.CASCADE, primary_key=True)
+	food = models.ManyToManyField(Food, blank=True)
+	def __str__(self):
+		return self.profile.first_name + " " + self.profile.second_name + "'s diary"
 
 class ShoppingList(models.Model):
 	profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
