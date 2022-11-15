@@ -39,14 +39,17 @@ def login(request):
 
 def recipes(request):
     recipe_list = Recipe.objects.all()
+    #form = 
     
-    
-    # if request.method == "POST":
-    #     form = 
-    #     if request.POST.get(""):
-    #         return
+    if request.method == "POST":
+        
+        if request.POST.get(""):
+            return
     return render(request, 'recipe.html', {'recipe_list' : recipe_list})
 
+def diary(request):
+    return render(request, 'diary.html', {})
+#'diary_list' : diary_list
 @csrf_exempt
 def register(request):
     form = UserCreationForm
