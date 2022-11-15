@@ -10,13 +10,13 @@ class User(models.Model):
 	password = models.CharField(max_length=50)
 	email = models.EmailField(max_length=254)
 
-	def create(cls, state: State, userid, password, email):
+	def create(cls, userid, password, email):
 		cls.setUser(Unsubscribe())		
 		
-		return cls(userid=userid, email=email, password=password, state=state)
+		return cls(userid=userid, email=email, password=password)
 
 	def __str__(self):
-		return self.userid + " " + self.email
+		return str(self.userid) + " " + self.email
 
     #Changes the state of the object
 	def setUser(self, state: State):
