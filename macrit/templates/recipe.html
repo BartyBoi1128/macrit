@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
     <h3>Recipies</h3>
-    {% for recipe_entries in recipe_list %}
+    {% for recipes in recipe_list %}
         <div class="card">
             <div class="card-header">
-                Recipe Name : {{recipe_entries}}
+                Recipe Name : {{recipes.nameOfRecipe}}
             </div>
             <div class="card-body">
                 <h5 class="card-title">  </h5>
                 <p class="card-text">Add any information we want here
                   <ul>
-                    <li>recipie entries : {{recipe_entries}}</li>
-                    <li>recipie entries : {{recipe_entries}}</li>
-                    <li>recipie entries : {{recipe_entries}}</li>
-                    <li>recipie entries : {{recipe_entries}}</li>
+                    <li>recipie entries : {{recipes.nameOfRecipe}}</li>
+                    {% for ingredients in recipes.ingredients.all %}
+                      <li>Ingredients : {{ingredients}}</li>
+                    {% endfor %}
+                      <li>Recipie Instructions : {{recipes.instructions}}</li>
                   <ul>
                 </p>
 
@@ -21,38 +22,6 @@
             </div>
         </div>
             <div class = "container">
-            
-            <li></li>
         </ul>
         {% endfor %}
-
-        {% comment %} <div class="card">
-            <div class="card-header">
-              Tomato
-            </div>
-            <div class="card-body">
-              <p class="card-text">Stats go in here</p>
-              <a href="#" class="btn btn-primary">Add To Diary</a>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              Apple
-            </div>
-            <div class="card-body">
-              <p class="card-text">Stats go in here</p>
-              <a href="#" class="btn btn-primary">Add To Diary</a>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              Spaghetti Bolognese
-            </div>
-            <div class="card-body">
-              <p class="card-text">Stats go in here</p>
-              <a href="#" class="btn btn-primary">Add To Diary</a>
-            </div>
-          </div> {% endcomment %}
 </html>
