@@ -2,7 +2,7 @@ import datetime
 from recipes.forms import UserCreationForm
 from django.shortcuts import redirect, render
 from django.template import loader
-from recipes.models import User, Recipe
+from recipes.models import User, Recipe, Diary
 from recipes.service import *
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
@@ -48,8 +48,10 @@ def recipes(request):
     return render(request, 'recipe.html', {'recipe_list' : recipe_list})
 
 def diary(request):
-    return render(request, 'diary.html', {})
-#'diary_list' : diary_list
+    diary_list = Diary.objects.all()
+    
+    return render(request, 'diary.html', {'diary_list' : diary_list})
+
 @csrf_exempt
 def register(request):
     form = UserCreationForm
