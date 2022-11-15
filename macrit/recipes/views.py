@@ -14,6 +14,8 @@ from django.core.exceptions import ValidationError
 
 
 def index(request):
+    if 'user' in request.session:
+        user = request.session['user']
     return render(request, 'index.html', {})
 
 def settings(request):
@@ -27,6 +29,7 @@ def login(request):
         for user in User.objects.all():
             if user.email == request.POST.get('email'):
                 if user.password == request.POST.get('password1'):
+                    request.session['user'] = str(User.objects.get(userid=user.userid))
                     return redirect("index")
                 else:
                     verify = 1
