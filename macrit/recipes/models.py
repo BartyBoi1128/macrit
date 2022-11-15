@@ -75,29 +75,6 @@ class Unsubscribe(State):
         print("You have already unsubscribed")
         #output error message
 
-
-##This is test code if it was run seperately
-# if __name__ == "__main__":
-#     # The client code.
-
-#     myUser = User(Unsubscribe())
-#     myUser.presentState()
-
-#     myUser.subscribe()
-
-#     myUser.presentState()
-
-#     myUser.unsubscribe()
-
-#     myUser.presentState()
-
-#     myUser.unsubscribe()
-
-#     myUser.presentState()
-
-
-	
-
 class Profile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	first_name = models.CharField(max_length=50)
