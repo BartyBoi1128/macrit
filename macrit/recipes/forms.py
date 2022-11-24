@@ -4,6 +4,18 @@ from django.contrib.auth.models import User
 from recipes.models import User as wagwan
 from django.core.exceptions import ValidationError
 
+class registerProfileForm(forms.Form):
+    first_name = forms.CharField(label = "First Name", max_length=50)
+    second_name = forms.CharField(label = "Second Name", max_length=100)
+    height = forms.FloatField(label= "Height")
+    weight = forms.FloatField(label= "Weight")
+    age = forms.FloatField(label= "Age")
+    gender = forms.BooleanField(label= "Male?", required=False)
+    weight_goal = forms.FloatField(label = "Weight Goal")
+    weight_goal_time = forms.DateField(label = "Weight Goal Date")
+    vegeterian = forms.BooleanField(label= "Are you vegeterian?", required=False)
+    vegan = forms.BooleanField(label= "Are you vegan?", required=False)
+
 class UserCreationForm(UserCreationForm):
     def validate_email(value):
         for user in wagwan.objects.all():

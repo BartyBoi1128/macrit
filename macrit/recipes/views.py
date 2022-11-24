@@ -1,9 +1,10 @@
 import datetime
-from recipes.forms import UserCreationForm
+from recipes.forms import UserCreationForm, registerProfileForm
 from django.shortcuts import redirect, render
 from django.template import loader
-from recipes.models import User, Recipe
+from recipes.models import User, Profile, Recipe
 from recipes.service import *
+from recipes.usersettings import *
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
 
@@ -55,6 +56,60 @@ def recipes(request):
         
     
     return render(request, 'recipe.html', {'recipe_list' : recipe_list})
+#Bart
+       # self.profile_age = newAge
+       # self.profile_gender = newGender
+       # self.profile_weight = newWeight
+       # self.profile_height = newHeight
+       # self.profile_weight_goal = newGoal
+       # self.profile_weight_goal_time = newGoalTime
+       # self.profile_bmi = bmiCalc(self.profile_height, self.profile_weight)
+def settings(request):
+    current_user = User.objects.get(userid = request.session['user'])
+    current_settings = usersettings()
+    #Finish this after profile page
+    #if not hasattr('current_user', 'profile'):
+    #    new_profile = Profile()
+    #    current_user.setProfile(current_user, new_profile)
+    current_settings.setAll(current_settings, current_user.profile.age, current_user.profile.gender, current_user.profile.weight, current_user.profile.height, current_user.profile.weight_goal, current_user.profile.weight_goal_time)
+    current_settings.attach(current_settings, current_user.profile)
+    contexttings = {
+        'age': current_user.age,
+        'gender': current_user.gender
+    }
+    return render(request, 'settings.html', contexttings)
+
+#Bart
+#first_name = models.CharField(max_length=50)
+	#second_name = models.CharField(max_length=100)
+	#height = models.FloatField()
+	#weight = models.FloatField()
+	#BMI = models.FloatField()
+	#age = models.IntegerField()
+	#gender = models.BooleanField(default=False)
+	#weight_goal = models.FloatField()
+	#weight_goal_time = models.DateField()
+	#vegeterian = models.BooleanField(default=False)
+	#vegan = models.BooleanField(default=False)
+def registerProfile(request):
+    if request.method == "POST":
+        form = registerProfileForm(request.POST)
+        if form.is_valid():
+            fn = form.cleaned_data["first_name"]
+            sn = form.cleaned_data["second_name"]
+            h = form.cleaned_data["height"]
+            w = form.cleaned_data["weight"]
+            a = form.cleaned_data["age"]
+            g = form.cleaned_data["gender"]
+            wg = form.cleaned_data["weight_goal"]
+            wgt = form.cleaned_data["weight_goal_time"]
+            vgt = form.cleaned_data["vegeterian"]
+            vg = form.cleaned_data["vegan"]
+            Profile.objects.create(first_name = fn, second_name = sn, height = h, weight = w, BMI= bmiCalc(h,w), age = a, gender = g, weight_goal = wg, weight_goal_time = wgt, vegeterian = vgt, vegan = vg, user = User.objects.get(userid = request.session['user']))           
+            return redirect("login")
+    else:
+        form = registerProfileForm()        
+        return render(request, 'registerProfile.html', {"form":form})
 
 @csrf_exempt
 def diary(request):
@@ -104,10 +159,10 @@ def register(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            email = request.POST.get('email', '')
+            e_mail = request.POST.get('email', '')
             password = request.POST.get('password1')
-            User.objects.create(email = email, password = password)
-            return redirect("login")
-
+            User.objects.create(email = e_mail, password = password)
+            request.session['user'] = User.objects.get(email=e_mail).userid
+            return redirect("registerProfile")
     context = {'form': form}
     return render(request, 'register.html', context)

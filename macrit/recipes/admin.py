@@ -6,7 +6,6 @@ from .models import Diary
 from .models import Food
 from .models import ShoppingList
 from .models import Recipe
-from .models import HealthCondition
 
 admin.site.register(User)
 admin.site.register(Profile)

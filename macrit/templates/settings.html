@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+    <h3>Edit your profile</h3>
+
+    <form method="POST", action="">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type = "submit", name="save"> Create New </button>
+    </form>
+</html>

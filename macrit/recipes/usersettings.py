@@ -1,4 +1,4 @@
-from service import *
+from recipes.service import *
 
 class usersettings:
     def __init__(self):
@@ -9,7 +9,8 @@ class usersettings:
         self.profile_weight_goal_time = None
         self.profile_age = None
         self.profile_gender = None
-        self.profile_bmi = bmiCalc(usersettings.profile_height,usersettings.profile_weight)
+        if (self.profile_height != None and self.profile_weight != None):
+            self.profile_bmi = bmiCalc(usersettings.profile_height,usersettings.profile_weight)
 
     def attach(self,observer):
         observer.user = self
@@ -32,17 +33,28 @@ class usersettings:
 
     def setWeight(self,newWeight):
         self.profile_weight = newWeight
-        bmiCalc(self.profile_height, self.profile_weight)
+        self.profile_bmi = bmiCalc(self.profile_height, self.profile_weight)
 
     def setHeight(self, newHeight):
         self.profile_height = newHeight
-        bmiCalc(self.profile_height, self.profile_weight)
+        self.profile_bmi = bmiCalc(self.profile_height, self.profile_weight)
 
     def setWeightGoal(self, newGoal):
         self.profile_weight_goal = newGoal
 
     def setWeightGoalTime(self, newGoalTime):
         self.profile_weight_goal_time = newGoalTime
+
+    def setAll(self, newAge, newGender, newWeight, newHeight, newGoal, newGoalTime):
+        self.profile_age = newAge
+        self.profile_gender = newGender
+        self.profile_weight = newWeight
+        self.profile_height = newHeight
+        self.profile_weight_goal = newGoal
+        self.profile_weight_goal_time = newGoalTime
+        if (self.profile_height != None and self.profile_weight != None):
+            self.profile_bmi = bmiCalc(usersettings.profile_height,usersettings.profile_weight)
+        
 
     #Getters
     def getAge(self):
