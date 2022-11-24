@@ -22,6 +22,7 @@ def index(request):
 def settings(request):
     return render(request,'index.html', {})
 
+@csrf_exempt
 def login(request):
     form = UserCreationForm
     verify = 0
@@ -31,7 +32,8 @@ def login(request):
             if user.email == request.POST.get('email'):
                 if user.password == request.POST.get('password1'):
                     request.session['user'] = str(User.objects.get(userid=user.userid))
-                    request.session['diary'] = []
+                    global diaryList
+                    diaryList = []
                     return redirect("index")
                 else:
                     verify = 1
@@ -41,33 +43,46 @@ def login(request):
     context = {'form': form, 'verify': verify}
     return render(request, 'login.html', context)
 
+@csrf_exempt
 def recipes(request):
     recipe_list = Recipe.objects.all()
     #if('submit') in request.Post:
-    if request.Post.get('AddTorecipie'):
-        request.session['diary'] = request.session['diary'] + [request.POST.get('recipeInput')]
+    if request.POST.get('AddTorecipie'):
+        diaryList.append(request.POST.get('recipeInput'))
+        print(request.POST.get('recipeInput'))
+        print(diaryList[0])
+        print("aaaaaahhhhhhh")
         
     
     return render(request, 'recipe.html', {'recipe_list' : recipe_list})
 
+@csrf_exempt
 def diary(request):
     recipe_list = Recipe.objects.all()
     #diary_list =
     totalCal = 0
-    for recipe in request.session['diary']:
-        totalCal += recipe.calories
-        totalFat += recipe.fat
-        totalSaturates += recipe.saturates
-        totalSuagar += recipe.sugar
-        totalSalt += recipe.salt
-        totalProtein += recipe.protein
-        totalCarbs += recipe.carbs
-        totalFibre += recipe.fibre
+    totalFat = 0
+    totalSaturates = 0
+    totalSugar = 0
+    totalSalt = 0
+    totalProtein = 0
+    totalCarbs = 0
+    totalFibre = 0
+    for recipe in diaryList:
+        recipetoo = Recipe.objects.get(nameOfRecipe = recipe)
+        totalCal += recipetoo.calories
+        totalFat += recipetoo.fat
+        totalSaturates += recipetoo.saturates
+        totalSugar += recipetoo.sugar
+        totalSalt += recipetoo.salt
+        totalProtein += recipetoo.protein
+        totalCarbs += recipetoo.carbs
+        totalFibre += recipetoo.fibre
             
 
     #Creation of the piechart     
     xdata = ["calories","fat","saturates","sugar","salt","protein","carbs","fibre"]
-    ydata = [totalCal, totalFat, totalSaturates, totalSuagar, totalSalt, totalProtein, totalCarbs, totalFibre]
+    ydata = [totalCal, totalFat, totalSaturates, totalSugar, totalSalt, totalProtein, totalCarbs, totalFibre]
     
    
     extra_serie = {"tooltip": {"y_start": "", "y_end": " cal"}}

@@ -18,7 +18,8 @@
                       <li>Recipie Instructions : {{recipes.instructions}}</li>
                   <ul>
                 </p>
-                <input type="submit" name="AddTorecipie" value="{{recipes}}">&nbsp;Add To Diary</input>
+                <input type = "hidden" value = {{recipes}} name = "recipeInput"/>
+                <input type="submit" name="AddTorecipie" value={{recipes}}>&nbsp;Add To Diary</input>
             </div>
         </div>
             <div class = "container">
