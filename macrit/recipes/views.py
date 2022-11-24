@@ -116,7 +116,7 @@ def register(request):
             e_mail = request.POST.get('email', '')
             password = request.POST.get('password1')
             User.objects.create(email = e_mail, password = password)
-            request.session['user'] = str(User.objects.get(email=e_mail).userid)
+            request.session['user'] = User.objects.get(email=e_mail).userid
             return redirect("registerProfile")
     context = {'form': form}
     return render(request, 'register.html', context)
