@@ -2,7 +2,7 @@ import datetime
 from recipes.forms import UserCreationForm, registerProfileForm
 from django.shortcuts import redirect, render
 from django.template import loader
-from recipes.models import User, Profile, Recipe
+from recipes.models import User, Profile, Recipe, Diary, Food
 from recipes.service import *
 from recipes.usersettings import *
 from django.views.decorators.csrf import csrf_exempt
@@ -113,8 +113,6 @@ def registerProfile(request):
 
 @csrf_exempt
 def diary(request):
-    recipe_list = Recipe.objects.all()
-    #diary_list =
     totalCal = 0
     totalFat = 0
     totalSaturates = 0
@@ -123,16 +121,21 @@ def diary(request):
     totalProtein = 0
     totalCarbs = 0
     totalFibre = 0
-    for recipe in diaryList:
-        recipetoo = Recipe.objects.get(nameOfRecipe = recipe)
-        totalCal += recipetoo.calories
-        totalFat += recipetoo.fat
-        totalSaturates += recipetoo.saturates
-        totalSugar += recipetoo.sugar
-        totalSalt += recipetoo.salt
-        totalProtein += recipetoo.protein
-        totalCarbs += recipetoo.carbs
-        totalFibre += recipetoo.fibre
+    if 'user' in request.session:
+        userid = request.session['user']
+        user = User.objects.get(userid=userid)
+        profile = Profile.objects.get(user=user)
+        diary = Diary.objects.get(profile=profile)
+    
+    for food in Food.objects.filter(diary=diary):
+        totalCal += food.calories
+        totalFat += food.fat
+        totalSaturates += food.saturates
+        totalSugar += food.sugar
+        totalSalt += food.salt
+        totalProtein += food.protein
+        totalCarbs += food.carbs
+        totalFibre += food.fibre
             
 
     #Creation of the piechart     
