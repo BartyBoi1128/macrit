@@ -1,9 +1,9 @@
-
 from __future__ import annotations
 from django.db import models
 from abc import ABC, abstractmethod
 
 #user class is initiated with default state
+
 class User(models.Model):
 	userid = models.IntegerField(primary_key=True)
 	password = models.CharField(max_length=50)
@@ -52,6 +52,34 @@ class State(ABC):
 	def unsubscribe(self) -> None:
 		pass
 
+class Profile(models.Model):
+	first_name = models.CharField(max_length=50)
+	second_name = models.CharField(max_length=100)
+	height = models.FloatField()
+	weight = models.FloatField()
+	BMI = models.FloatField()
+	age = models.IntegerField()
+	gender = models.BooleanField(default=False)
+	weight_goal = models.FloatField()
+	weight_goal_time = models.DateField()
+	vegeterian = models.BooleanField(default=False)
+	vegan = models.BooleanField(default=False)
+	user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+
+
+	def __str__(self):
+		return self.first_name + ' ' + self.second_name
+		
+	def update(self,age, gender, height, weight, weight_goal, weight_goal_time, BMI):
+		self.age = age
+		self.gender = gender
+		self.height = height
+		self.weight = weight
+		self.weight_goal = weight_goal
+		self.weight_goal_time = weight_goal_time
+		self.BMI = BMI
+
+
 	
 class Subscribe(State):
     # if up button is pushed, move upwards then it changes its state to second floor.
@@ -73,33 +101,6 @@ class Unsubscribe(State):
     def unsubscribe(self) -> None:
         print("You have already unsubscribed")
         #output error message
-
-class Profile(models.Model):
-	user = models.OneToOneField(User, on_delete=models.CASCADE)
-	first_name = models.CharField(max_length=50)
-	second_name = models.CharField(max_length=100)
-	height = models.FloatField()
-	weight = models.FloatField()
-	BMI = models.FloatField()
-	age = models.IntegerField()
-	gender = models.BooleanField(default=False)
-	weight_goal = models.FloatField()
-	weight_goal_time = models.DateField()
-	vegeterian = models.BooleanField(default=False)
-	vegan = models.BooleanField(default=False)
-
-	def __str__(self):
-		return self.first_name + ' ' + self.second_name
-
-		
-	def update(self,age, gender, height, weight, weight_goal, weight_goal_time, BMI):
-		self.age = age
-		self.gender = gender
-		self.height = height
-		self.weight = weight
-		self.weight_goal = weight_goal
-		self.weight_goal_time = weight_goal_time
-		self.BMI = BMI
 
 class HealthCondition(models.Model):
 	abstract = True

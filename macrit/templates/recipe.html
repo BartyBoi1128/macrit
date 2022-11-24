@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <h3>Recipies</h3>
+    <h3>Recipes</h3>
     {% for recipes in recipe_list %}
         <div class="card">
             <div class="card-header">
@@ -10,11 +10,11 @@
                 <h5 class="card-title">  </h5>
                 <p class="card-text">Add any information we want here
                   <ul>
-                    <li>recipie entries : {{recipes.nameOfRecipe}}</li>
+                    <li>recipe entries : {{recipes.nameOfRecipe}}</li>
                     {% for ingredients in recipes.ingredients.all %}
                       <li>Ingredients : {{ingredients}}</li>
                     {% endfor %}
-                      <li>Recipie Instructions : {{recipes.instructions}}</li>
+                      <li>Recipe Instructions : {{recipes.instructions}}</li>
                   <ul>
                 </p>
 
