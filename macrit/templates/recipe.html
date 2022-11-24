@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <h3>Recipies</h3>
+    <form method="POST", action="">
     {% for recipes in recipe_list %}
         <div class="card">
             <div class="card-header">
@@ -17,11 +18,11 @@
                       <li>Recipie Instructions : {{recipes.instructions}}</li>
                   <ul>
                 </p>
-
-                <button type="submit" name="AddTorecipie" value="AddTorecipie">&nbsp;Add To Diary</button>
+                <input type="submit" name="AddTorecipie" value="{{recipes}}">&nbsp;Add To Diary</input>
             </div>
         </div>
             <div class = "container">
         </ul>
-        {% endfor %}
+    {% endfor %}
+    </form>
 </html>

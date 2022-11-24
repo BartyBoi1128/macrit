@@ -31,6 +31,7 @@ def login(request):
             if user.email == request.POST.get('email'):
                 if user.password == request.POST.get('password1'):
                     request.session['user'] = str(User.objects.get(userid=user.userid))
+                    request.session['diary'] = []
                     return redirect("index")
                 else:
                     verify = 1
@@ -42,13 +43,43 @@ def login(request):
 
 def recipes(request):
     recipe_list = Recipe.objects.all()
+    #if('submit') in request.Post:
+    if request.Post.get('AddTorecipie'):
+        request.session['diary'] = request.session['diary'] + [request.POST.get('recipeInput')]
+        
     
-    
-    # if request.method == "POST":
-    #     form = 
-    #     if request.POST.get(""):
-    #         return
     return render(request, 'recipe.html', {'recipe_list' : recipe_list})
+
+def diary(request):
+    recipe_list = Recipe.objects.all()
+    #diary_list =
+    totalCal = 0
+    for recipe in request.session['diary']:
+        totalCal += recipe.calories
+        totalFat += recipe.fat
+        totalSaturates += recipe.saturates
+        totalSuagar += recipe.sugar
+        totalSalt += recipe.salt
+        totalProtein += recipe.protein
+        totalCarbs += recipe.carbs
+        totalFibre += recipe.fibre
+            
+
+    #Creation of the piechart     
+    xdata = ["calories","fat","saturates","sugar","salt","protein","carbs","fibre"]
+    ydata = [totalCal, totalFat, totalSaturates, totalSuagar, totalSalt, totalProtein, totalCarbs, totalFibre]
+    
+   
+    extra_serie = {"tooltip": {"y_start": "", "y_end": " cal"}}
+    chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
+    charttype = "pieChart"
+    
+    data = {
+        'charttype': charttype,
+        'chartdata': chartdata,
+    }
+    
+    return render(request, 'diary.html', data)
 
 @csrf_exempt
 def register(request):
