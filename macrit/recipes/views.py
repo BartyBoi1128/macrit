@@ -32,9 +32,7 @@ def login(request):
         for user in User.objects.all():
             if user.email == request.POST.get('email'):
                 if user.password == request.POST.get('password1'):
-                    request.session['user'] = str(User.objects.get(userid=user.userid))
-                    global diaryList
-                    diaryList = []
+                    request.session['user'] = user.userid
                     return redirect("index")
                 else:
                     verify = 1
@@ -46,15 +44,7 @@ def login(request):
 
 @csrf_exempt
 def recipes(request):
-    recipe_list = Recipe.objects.all()
-    #if('submit') in request.Post:
-    if request.POST.get('AddTorecipie'):
-        diaryList.append(request.POST.get('recipeInput'))
-        print(request.POST.get('recipeInput'))
-        print(diaryList[0])
-        print("aaaaaahhhhhhh")
-        
-    
+    recipe_list = Recipe.objects.all()   
     return render(request, 'recipe.html', {'recipe_list' : recipe_list})
 #Bart
        # self.profile_age = newAge
@@ -64,6 +54,7 @@ def recipes(request):
        # self.profile_weight_goal = newGoal
        # self.profile_weight_goal_time = newGoalTime
        # self.profile_bmi = bmiCalc(self.profile_height, self.profile_weight)
+       
 def settings(request):
     current_user = User.objects.get(userid = request.session['user'])
     current_settings = usersettings()
@@ -105,7 +96,9 @@ def registerProfile(request):
             wgt = form.cleaned_data["weight_goal_time"]
             vgt = form.cleaned_data["vegeterian"]
             vg = form.cleaned_data["vegan"]
-            Profile.objects.create(first_name = fn, second_name = sn, height = h, weight = w, BMI= bmiCalc(h,w), age = a, gender = g, weight_goal = wg, weight_goal_time = wgt, vegeterian = vgt, vegan = vg, user = User.objects.get(userid = request.session['user']))           
+            current_user = User.objects.get(userid = request.session['user'])
+            current_profile = Profile.objects.create(first_name = fn, second_name = sn, height = h, weight = w, BMI= bmiCalc(h,w), age = a, gender = g, weight_goal = wg, weight_goal_time = wgt, vegeterian = vgt, vegan = vg, user = current_user)           
+            Diary.objects.create(profile=current_profile)
             return redirect("login")
     else:
         form = registerProfileForm()        
@@ -113,45 +106,12 @@ def registerProfile(request):
 
 @csrf_exempt
 def diary(request):
-    totalCal = 0
-    totalFat = 0
-    totalSaturates = 0
-    totalSugar = 0
-    totalSalt = 0
-    totalProtein = 0
-    totalCarbs = 0
-    totalFibre = 0
     if 'user' in request.session:
         userid = request.session['user']
         user = User.objects.get(userid=userid)
         profile = Profile.objects.get(user=user)
         diary = Diary.objects.get(profile=profile)
-    
-    for food in Food.objects.filter(diary=diary):
-        totalCal += food.calories
-        totalFat += food.fat
-        totalSaturates += food.saturates
-        totalSugar += food.sugar
-        totalSalt += food.salt
-        totalProtein += food.protein
-        totalCarbs += food.carbs
-        totalFibre += food.fibre
-            
-
-    #Creation of the piechart     
-    xdata = ["calories","fat","saturates","sugar","salt","protein","carbs","fibre"]
-    ydata = [totalCal, totalFat, totalSaturates, totalSugar, totalSalt, totalProtein, totalCarbs, totalFibre]
-    
-   
-    extra_serie = {"tooltip": {"y_start": "", "y_end": " cal"}}
-    chartdata = {'x': xdata, 'y1': ydata, 'extra1': extra_serie}
-    charttype = "pieChart"
-    
-    data = {
-        'charttype': charttype,
-        'chartdata': chartdata,
-    }
-    
+        data = {'intake': diary.intake.all()}
     return render(request, 'diary.html', data)
 
 @csrf_exempt
