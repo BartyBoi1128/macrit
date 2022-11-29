@@ -1,5 +1,5 @@
 import datetime
-from recipes.forms import UserCreationForm, registerProfileForm
+from recipes.forms import UserCreationForm, registerProfileForm, userSettingsForm
 from django.shortcuts import redirect, render
 from django.template import loader
 from recipes.models import User, Profile, Recipe
@@ -50,41 +50,53 @@ def recipes(request):
     #     if request.POST.get(""):
     #         return
     return render(request, 'recipe.html', {'recipe_list' : recipe_list})
-#Bart
-       # self.profile_age = newAge
-       # self.profile_gender = newGender
-       # self.profile_weight = newWeight
-       # self.profile_height = newHeight
-       # self.profile_weight_goal = newGoal
-       # self.profile_weight_goal_time = newGoalTime
-       # self.profile_bmi = bmiCalc(self.profile_height, self.profile_weight)
-def settings(request):
-    current_user = User.objects.get(userid = request.session['user'])
-    current_settings = usersettings()
-    #Finish this after profile page
-    #if not hasattr('current_user', 'profile'):
-    #    new_profile = Profile()
-    #    current_user.setProfile(current_user, new_profile)
-    current_settings.setAll(current_settings, current_user.profile.age, current_user.profile.gender, current_user.profile.weight, current_user.profile.height, current_user.profile.weight_goal, current_user.profile.weight_goal_time)
-    current_settings.attach(current_settings, current_user.profile)
-    contexttings = {
-        'age': current_user.age,
-        'gender': current_user.gender
-    }
-    return render(request, 'settings.html', contexttings)
 
-#Bart
-#first_name = models.CharField(max_length=50)
-	#second_name = models.CharField(max_length=100)
-	#height = models.FloatField()
-	#weight = models.FloatField()
-	#BMI = models.FloatField()
-	#age = models.IntegerField()
-	#gender = models.BooleanField(default=False)
-	#weight_goal = models.FloatField()
-	#weight_goal_time = models.DateField()
-	#vegeterian = models.BooleanField(default=False)
-	#vegan = models.BooleanField(default=False)
+    #profile_age = forms.FloatField(label= "Age")
+    #profile_gender = forms.BooleanField(label= "Male?")
+    #profile_weight = forms.FloatField(label= "Weight")
+    #profile_height = forms.FloatField(label= "Height")
+    #profile_weight_goal = forms.FloatField(label= "Weight Goal")
+
+    #profile_weight_goal_time = forms.DateField(label= "Weight Goal Time")
+def settings(request):
+    if request.method == "POST":
+        form = userSettingsForm(request.POST)
+        current_settings = usersettings()
+        if form.is_valid():
+            pa = form.cleaned_data["profile_age"]
+            pg = form.cleaned_data["profile_gender"]
+            pw = form.cleaned_data["profile_weight"]
+            ph = form.cleaned_data["profile_height"]
+            pwg = form.cleaned_data["profile_weight_goal"]
+            pwgt = form.cleaned_data["profile_weight_goal_time"]
+            for profile in Profile.objects.all():
+                if profile.user == User.objects.get(userid = request.session['user']):
+                    print(pa)
+                    if pa == None:
+                        pa = profile.age
+                    if pg == False:
+                        pg = profile.gender
+                    else:
+                        pg = not profile.gender                   
+                    if pw == None:
+                        pw = profile.weight
+                    if ph == None:
+                        ph = profile.height
+                    if pwg == None:
+                        pwg = profile.weight_goal
+                    if pwgt == None:
+                        pwgt = profile.weight_goal_time 
+                    current_settings.setAll(pa, pg, pw, ph, pwg, pwgt)
+                    current_settings.attach(profile)
+                    current_settings.notify()
+                    profile.save()                    
+            return redirect("index")
+        else:
+            return redirect("login")
+    else:
+        form = userSettingsForm()
+        return render(request, 'settings.html', {"form":form})
+
 def registerProfile(request):
     if request.method == "POST":
         form = registerProfileForm(request.POST)
