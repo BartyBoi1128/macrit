@@ -1,16 +1,17 @@
-from recipes.models import Diary, Food
+from recipes.models import Diary, Food, Profile
 import numpy as np
 
 class Nutrition():
-    def __init__(self, gender, height, weight, age):
+    def __init__(self, profile: Profile):
         self.maintenance_calories = get_maintenance_calories(
-            gender, height, weight, age)
+            profile.gender, profile.height, profile.weight, profile.age)
         self.needed_fat = needed_fat(self.maintenance_calories)
         self.needed_saturates = needed_saturates(self.maintenance_calories)
         self.needed_sugar = needed_sugar(self.maintenance_calories)
-        self.needed_protein = needed_protein(weight)
+        self.needed_protein = needed_protein(profile.weight)
         self.needed_carbs = needed_carbs(self.maintenance_calories)
         self.needed_fibre = needed_carbs(self.maintenance_calories)
+        self.needed_salt = 6
 
     def update(self, age, gender, weight, height, weightGoal, weightGoalTime, BMI):
         self.maintenance_calories = get_maintenance_calories(gender,height,weight,age)
@@ -20,31 +21,27 @@ class Nutrition():
         self.needed_protein = needed_protein(weight)
         self.needed_carbs = needed_carbs(self.maintenance_calories)
         self.needed_fibre = needed_carbs(self.maintenance_calories)
-        self.needed_salt = 6
     
     # Decorator that changes every value of the dictionary to be formatted as consumed/needed
     def dict_decorator(func, diary: Diary):
-        def inner(self):
-            plain_dict = func(self)
+        def inner(func):
+            plain_dict = func()
             detailed_dict = {
-                key.replace('needed', 'consumed'): str(np.sum(np.array([getattr(food, key.replace('needed_','')) for food in Food.objects.filter(intake=diary)]))) + "/" + value for key, value in zip(plain_dict.keys(), plain_dict.values())
+                key.replace('needed', 'consumed'): str(np.sum(np.array([getattr(food, key.replace('needed_','')) for food in diary.intake.all()]))) + "/" + str(value) for key, value in zip(plain_dict.keys(), plain_dict.values())
             }
             return detailed_dict
         return inner
         
-
-    @dict_decorator
-    @classmethod
-    def generate_dict(cls):
+    def generate_dict(self):
         return {
-            'needed_calories': cls.maintenance_calories,
-            'needed_fat': cls.needed_fat,
-            'needed_saturates': cls.needed_saturates,
-            'needed_sugar': cls.needed_sugar,
-            'needed_protein': cls.needed_protein,
-            'needed_carbs': cls.needed_carbs,
-            'needed_fibre': cls.needed_fibre,
-            'needed_salt': cls.needed_salt
+            'needed_calories': self.maintenance_calories,
+            'needed_fat': self.needed_fat,
+            'needed_saturates': self.needed_saturates,
+            'needed_sugar': self.needed_sugar,
+            'needed_protein': self.needed_protein,
+            'needed_carbs': self.needed_carbs,
+            'needed_fibre': self.needed_fibre,
+            'needed_salt': self.needed_salt
         }
 
 

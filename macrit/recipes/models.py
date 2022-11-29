@@ -105,21 +105,9 @@ class Unsubscribe(State):
         print("You have already unsubscribed")
         #output error message
 
-class HealthCondition(models.Model):
-	abstract = True
-	health_condition = models.CharField(max_length=100)
-	doesUserHave = models.BooleanField(default=False)
-	profile = models.ManyToManyField(Profile)
-
-class Diary(models.Model):
-	profile = models.OneToOneField(Profile, on_delete=models.CASCADE, primary_key=True)
-	def __str__(self):
-		return self.profile.first_name + " " + self.profile.second_name + "'s diary"
-
 class Food(models.Model):
-	nameOfIngredient = models.CharField(max_length=100, primary_key=True)
-	intake = models.ManyToManyField(Diary, blank=True)
-	amountOfIngredient = models.FloatField()
+	name = models.CharField(max_length=100, primary_key=True)
+	amount = models.FloatField()
 	calories = models.FloatField()
 	fat = models.FloatField()
 	saturates = models.FloatField()
@@ -130,18 +118,24 @@ class Food(models.Model):
 	fibre = models.FloatField()
 
 	def __str__(self):
-		return self.nameOfIngredient
+		return self.name
+
+class Diary(models.Model):
+	profile = models.OneToOneField(Profile, on_delete=models.CASCADE, primary_key=True)
+	intake = models.ManyToManyField(Food, blank=True)
+	def __str__(self):
+		return self.profile.first_name + " " + self.profile.second_name + "'s diary"
+
 		
 class ShoppingList(models.Model):
 	profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
 	ingredients = models.ManyToManyField(Food)
 
 class Recipe(Food):
-	nameOfRecipe = models.CharField(max_length=100, primary_key=True)
 	ingredients = models.ManyToManyField(Food, related_name='+')
 	instructions = models.TextField()
 	tags = models.CharField(max_length=254)
 
 	def __str__(self):
-		return self.nameOfRecipe
+		return self.name
 
