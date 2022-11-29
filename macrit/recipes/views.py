@@ -2,7 +2,8 @@ import datetime
 from recipes.forms import UserCreationForm, registerProfileForm
 from django.shortcuts import redirect, render
 from django.template import loader
-from recipes.models import User, Profile, Recipe
+from recipes.models import User, Profile, Recipe, Diary, Food
+from .utils.nutrition import Nutrition
 from recipes.service import *
 from recipes.usersettings import *
 from django.views.decorators.csrf import csrf_exempt
@@ -10,10 +11,6 @@ from django.core.exceptions import ValidationError
 
 
 # Create your views here.
-
-# testUser = User.objects.get(userid=19269609)
-# testProfile = Profile.objects.create(user=testUser, first_name="Ivanna", second_name="Tinkle", height=183, weight=250,BMI=bmiCalc(183, 250),age=22,gender=False,weight_goal=200,weight_goal_time=datetime.datetime(2022, 12, 12),vegeterian=True, vegan=False)
-
 
 def index(request):
     if 'user' in request.session:
@@ -23,6 +20,7 @@ def index(request):
 def settings(request):
     return render(request,'index.html', {})
 
+@csrf_exempt
 def login(request):
     form = UserCreationForm
     verify = 0
@@ -31,7 +29,7 @@ def login(request):
         for user in User.objects.all():
             if user.email == request.POST.get('email'):
                 if user.password == request.POST.get('password1'):
-                    request.session['user'] = str(User.objects.get(userid = user.userid).userid)
+                    request.session['user'] = user.userid
                     return redirect("index")
                 else:
                     verify = 1
@@ -41,14 +39,9 @@ def login(request):
     context = {'form': form, 'verify': verify}
     return render(request, 'login.html', context)
 
+@csrf_exempt
 def recipes(request):
-    recipe_list = Recipe.objects.all()
-    
-    
-    # if request.method == "POST":
-    #     form = 
-    #     if request.POST.get(""):
-    #         return
+    recipe_list = Recipe.objects.all()   
     return render(request, 'recipe.html', {'recipe_list' : recipe_list})
 #Bart
        # self.profile_age = newAge
@@ -58,6 +51,7 @@ def recipes(request):
        # self.profile_weight_goal = newGoal
        # self.profile_weight_goal_time = newGoalTime
        # self.profile_bmi = bmiCalc(self.profile_height, self.profile_weight)
+       
 def settings(request):
     current_user = User.objects.get(userid = request.session['user'])
     current_settings = usersettings()
@@ -99,11 +93,26 @@ def registerProfile(request):
             wgt = form.cleaned_data["weight_goal_time"]
             vgt = form.cleaned_data["vegeterian"]
             vg = form.cleaned_data["vegan"]
-            Profile.objects.create(first_name = fn, second_name = sn, height = h, weight = w, BMI= bmiCalc(h,w), age = a, gender = g, weight_goal = wg, weight_goal_time = wgt, vegeterian = vgt, vegan = vg, user = User.objects.get(userid = request.session['user']))           
+            current_user = User.objects.get(userid = request.session['user'])
+            current_profile = Profile.objects.create(first_name = fn, second_name = sn, height = h, weight = w, BMI= bmiCalc(h,w), age = a, gender = g, weight_goal = wg, weight_goal_time = wgt, vegeterian = vgt, vegan = vg, user = current_user)           
+            Diary.objects.create(profile=current_profile)
             return redirect("login")
     else:
         form = registerProfileForm()        
         return render(request, 'registerProfile.html', {"form":form})
+
+@csrf_exempt
+def diary(request):
+    if 'user' in request.session:
+        userid = request.session['user']
+        user = User.objects.get(userid=userid)
+        profile = Profile.objects.get(user=user)
+        diary = Diary.objects.get(profile=profile)
+        nutrition = Nutrition(profile)
+        nutrition_info = nutrition.dict_decorator(diary)(nutrition.generate_dict)
+        print(nutrition_info)
+        data = {'intake': diary.intake.all()}
+    return render(request, 'diary.html', data)
 
 @csrf_exempt
 def register(request):
@@ -116,7 +125,7 @@ def register(request):
             e_mail = request.POST.get('email', '')
             password = request.POST.get('password1')
             User.objects.create(email = e_mail, password = password)
-            request.session['user'] = str(User.objects.get(email=e_mail).userid)
+            request.session['user'] = User.objects.get(email=e_mail).userid
             return redirect("registerProfile")
     context = {'form': form}
     return render(request, 'register.html', context)
