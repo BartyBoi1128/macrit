@@ -1,5 +1,6 @@
 from __future__ import annotations
 from django.db import models
+from recipes.service import *
 from abc import ABC, abstractmethod
 
 #user class is initiated with default state
@@ -58,7 +59,7 @@ class Profile(models.Model):
 	height = models.FloatField()
 	weight = models.FloatField()
 	BMI = models.FloatField()
-	age = models.IntegerField()
+	age = models.IntegerField(default=None)
 	gender = models.BooleanField(default=False)
 	weight_goal = models.FloatField()
 	weight_goal_time = models.DateField()
@@ -71,13 +72,15 @@ class Profile(models.Model):
 		return self.first_name + ' ' + self.second_name
 		
 	def update(self,age, gender, height, weight, weight_goal, weight_goal_time, BMI):
+		print("we update model here")
 		self.age = age
+		print(self.age)
 		self.gender = gender
 		self.height = height
 		self.weight = weight
 		self.weight_goal = weight_goal
 		self.weight_goal_time = weight_goal_time
-		self.BMI = BMI
+		self.BMI = bmiCalc(height,weight)
 
 
 	

@@ -1,5 +1,6 @@
 from datetime import date
 def bmiCalc(height, weight):
+    height = height * 0.01
     bmi = (weight / (height*height))
     return bmi
 

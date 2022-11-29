@@ -1,8 +1,9 @@
 from recipes.service import *
+from recipes.models import *
 
 class usersettings:
     def __init__(self):
-        self._obververs = set()
+        self._observers = set()
         self.profile_weight = None
         self.profile_height = None
         self.profile_weight_goal = None
@@ -13,16 +14,14 @@ class usersettings:
             self.profile_bmi = bmiCalc(usersettings.profile_height,usersettings.profile_weight)
 
     def attach(self,observer):
-        observer.user = self
         self._observers.add(observer)
 
     def detach(self, observer):
-        observer.user = None
         self._observers.discard(observer)
 
     def notify(self):
         for observer in self._observers:
-            observer.update(observer, self.profile_age, self.profile_gender, self.profile_weight,self.profile_height,self.profile_weight_goal,self.profile_weight_goal_time, self.profile_bmi)
+            observer.update(self.profile_age, self.profile_gender, self.profile_weight,self.profile_height,self.profile_weight_goal,self.profile_weight_goal_time, self.profile_bmi)
 
     #Setters
     def setAge(self, newAge):
@@ -53,8 +52,7 @@ class usersettings:
         self.profile_weight_goal = newGoal
         self.profile_weight_goal_time = newGoalTime
         if (self.profile_height != None and self.profile_weight != None):
-            self.profile_bmi = bmiCalc(usersettings.profile_height,usersettings.profile_weight)
-        
+            self.profile_bmi = bmiCalc(self.profile_height,self.profile_weight)
 
     #Getters
     def getAge(self):
