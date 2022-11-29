@@ -4,5 +4,10 @@
         <head>
         </head>
         <body>
+            <ul>
+                {% for food in intake %}
+                    <li>{{food.name}}</li>
+                {% endfor %}
+            </ul>
         </body>
 </html>

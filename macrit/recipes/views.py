@@ -3,6 +3,7 @@ from recipes.forms import UserCreationForm, registerProfileForm
 from django.shortcuts import redirect, render
 from django.template import loader
 from recipes.models import User, Profile, Recipe, Diary, Food
+from .utils.nutrition import Nutrition
 from recipes.service import *
 from recipes.usersettings import *
 from django.views.decorators.csrf import csrf_exempt
@@ -10,10 +11,6 @@ from django.core.exceptions import ValidationError
 
 
 # Create your views here.
-
-# testUser = User.objects.get(userid=19269609)
-# testProfile = Profile.objects.create(user=testUser, first_name="Ivanna", second_name="Tinkle", height=183, weight=250,BMI=bmiCalc(183, 250),age=22,gender=False,weight_goal=200,weight_goal_time=datetime.datetime(2022, 12, 12),vegeterian=True, vegan=False)
-
 
 def index(request):
     if 'user' in request.session:
@@ -111,6 +108,9 @@ def diary(request):
         user = User.objects.get(userid=userid)
         profile = Profile.objects.get(user=user)
         diary = Diary.objects.get(profile=profile)
+        nutrition = Nutrition(profile)
+        nutrition_info = nutrition.dict_decorator(diary)(nutrition.generate_dict)
+        print(nutrition_info)
         data = {'intake': diary.intake.all()}
     return render(request, 'diary.html', data)
 
