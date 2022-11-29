@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+    <h3>Diary</h3>
+        <head>
+        </head>
+        <body>
+            <ul>
+                {% for food in intake %}
+                    <li>{{food.name}}</li>
+                {% endfor %}
+            </ul>
+        </body>
+</html>

@@ -17,11 +17,12 @@
                       <li>Recipe Instructions : {{recipes.instructions}}</li>
                   <ul>
                 </p>
-
-                <button type="submit" name="AddToRecipe" value="AddToRecipe">&nbsp;Add To Diary</button>
+                <input type = "hidden" value = {{recipes}} name = "recipeInput"/>
+                <input type="submit" name="AddToRecipe" value={{recipes}}>&nbsp;Add To Diary</input>
             </div>
         </div>
             <div class = "container">
         </ul>
-        {% endfor %}
+    {% endfor %}
+    </form>
 </html>

@@ -102,14 +102,8 @@ class Unsubscribe(State):
         print("You have already unsubscribed")
         #output error message
 
-class Diary(models.Model):
-	profile = models.OneToOneField(Profile, on_delete=models.CASCADE, primary_key=True)
-	def __str__(self):
-		return self.profile.first_name + " " + self.profile.second_name + "'s diary"
-
 class Food(models.Model):
 	name = models.CharField(max_length=100, primary_key=True)
-	diary = models.ManyToManyField(Diary, blank=True)
 	amount = models.FloatField()
 	calories = models.FloatField()
 	fat = models.FloatField()
@@ -121,7 +115,14 @@ class Food(models.Model):
 	fibre = models.FloatField()
 
 	def __str__(self):
-		return self.nameOfIngredient
+		return self.name
+
+class Diary(models.Model):
+	profile = models.OneToOneField(Profile, on_delete=models.CASCADE, primary_key=True)
+	intake = models.ManyToManyField(Food, blank=True)
+	def __str__(self):
+		return self.profile.first_name + " " + self.profile.second_name + "'s diary"
+
 		
 class ShoppingList(models.Model):
 	profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
@@ -133,5 +134,5 @@ class Recipe(Food):
 	tags = models.CharField(max_length=254)
 
 	def __str__(self):
-		return self.nameOfRecipe
+		return self.name
 
