@@ -1,49 +1,26 @@
-from recipes.models import Diary, Food, Profile
 import numpy as np
 
-class Nutrition():
-    def __init__(self, profile: Profile):
-        self.maintenance_calories = get_maintenance_calories(
-            profile.gender, profile.height, profile.weight, profile.age)
-        self.needed_fat = needed_fat(self.maintenance_calories)
-        self.needed_saturates = needed_saturates(self.maintenance_calories)
-        self.needed_sugar = needed_sugar(self.maintenance_calories)
-        self.needed_protein = needed_protein(profile.weight)
-        self.needed_carbs = needed_carbs(self.maintenance_calories)
-        self.needed_fibre = needed_carbs(self.maintenance_calories)
-        self.needed_salt = 6
-
-    def update(self, age, gender, weight, height, weightGoal, weightGoalTime, BMI):
-        self.maintenance_calories = get_maintenance_calories(gender,height,weight,age)
-        self.needed_fat = needed_fat(self.maintenance_calories)
-        self.needed_saturates = needed_saturates(self.maintenance_calories)
-        self.needed_sugar = needed_sugar(self.maintenance_calories)
-        self.needed_protein = needed_protein(weight)
-        self.needed_carbs = needed_carbs(self.maintenance_calories)
-        self.needed_fibre = needed_carbs(self.maintenance_calories)
-    
     # Decorator that changes every value of the dictionary to be formatted as consumed/needed
-    def dict_decorator(func, diary: Diary):
-        def inner(func):
-            plain_dict = func()
-            detailed_dict = {
-                key.replace('needed', 'consumed'): str(np.sum(np.array([getattr(food, key.replace('needed_','')) for food in diary.intake.all()]))) + "/" + str(value) for key, value in zip(plain_dict.keys(), plain_dict.values())
-            }
-            return detailed_dict
-        return inner
-        
-    def generate_dict(self):
-        return {
-            'needed_calories': self.maintenance_calories,
-            'needed_fat': self.needed_fat,
-            'needed_saturates': self.needed_saturates,
-            'needed_sugar': self.needed_sugar,
-            'needed_protein': self.needed_protein,
-            'needed_carbs': self.needed_carbs,
-            'needed_fibre': self.needed_fibre,
-            'needed_salt': self.needed_salt
+def dict_decorator(func, diary, nutrition):
+    def inner(func):
+        plain_dict = func(nutrition)
+        detailed_dict = {
+            key.replace('needed', 'consumed'): str(np.sum(np.array([getattr(food, key.replace('needed_','')) for food in diary.intake.all()]))) + "/" + str(value) for key, value in zip(plain_dict.keys(), plain_dict.values())
         }
-
+        return detailed_dict
+    return inner
+    
+def generate_dict(nutrition):
+    return {
+        'needed_calories': nutrition.maintenance_calories,
+        'needed_fat': nutrition.needed_fat,
+        'needed_saturates': nutrition.needed_saturates,
+        'needed_sugar': nutrition.needed_sugar,
+        'needed_protein': nutrition.needed_protein,
+        'needed_carbs': nutrition.needed_carbs,
+        'needed_fibre': nutrition.needed_fibre,
+        'needed_salt': nutrition.needed_salt
+    }
 
 def get_maintenance_calories(gender, height, weight, age):
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from django.db import models
 from recipes.service import *
+import recipes.utils.nutrition as tits 
 from abc import ABC, abstractmethod
 
 #user class is initiated with default state
@@ -119,10 +120,45 @@ class Food(models.Model):
 
 	def __str__(self):
 		return self.name
+#START HERE
+class Nutrition(models.Model):
+    #def __init__(self, profile: Profile):
+	maintenance_calories = models.FloatField()
+	needed_fat = models.FloatField()
+	needed_saturates = models.FloatField()
+	needed_sugar = models.FloatField()
+	needed_protein = models.FloatField()
+	needed_carbs = models.FloatField()
+	needed_fibre = models.FloatField()
+	needed_salt = models.FloatField(default=6)
 
+	def update(self,age,gender,weight,height,weightGoal,weightGoalTime,BMI):
+		self.maintenance_calories = tits.get_maintenance_calories(gender,height,weight,age)
+		self.needed_fat = tits.needed_fat(self.maintenance_calories)
+		self.needed_saturates = tits.needed_saturates(self.maintenance_calories)
+		self.needed_sugar = tits.needed_sugar(self.maintenance_calories)
+		self.needed_protein = tits.needed_protein(weight)
+		self.needed_carbs = tits.needed_carbs(self.maintenance_calories)
+		self.needed_fibre = tits.needed_fibre(self.maintenance_calories)
+
+	@classmethod
+	def create(cls, age, gender, weight, height, weightGoal, weightGoalTime, BMI):
+		
+		print("HOWYA")
+		cls.maintenance_calories = tits.get_maintenance_calories(gender,height,weight,age)
+		cls.needed_fat = tits.needed_fat(cls.maintenance_calories)
+		cls.needed_saturates = tits.needed_saturates(cls.maintenance_calories)
+		cls.needed_sugar = tits.needed_sugar(cls.maintenance_calories)
+		cls.needed_protein = tits.needed_protein(weight)
+		cls.needed_carbs = tits.needed_carbs(cls.maintenance_calories)
+		cls.needed_fibre = tits.needed_fibre(cls.maintenance_calories)
+
+#ENDS HERE
 class Diary(models.Model):
 	profile = models.OneToOneField(Profile, on_delete=models.CASCADE, primary_key=True)
 	intake = models.ManyToManyField(Food, blank=True)
+	nutrition = models.OneToOneField(Nutrition, on_delete=models.CASCADE)
+
 	def __str__(self):
 		return self.profile.first_name + " " + self.profile.second_name + "'s diary"
 

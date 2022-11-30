@@ -2,8 +2,8 @@ import datetime
 from recipes.forms import UserCreationForm, registerProfileForm, userSettingsForm
 from django.shortcuts import redirect, render
 from django.template import loader
-from recipes.models import User, Profile, Recipe, Diary, Food
-from .utils.nutrition import Nutrition
+from recipes.models import User, Profile, Recipe, Diary, Food, Nutrition
+import recipes.utils.nutrition as nuts 
 from recipes.service import *
 from recipes.usersettings import *
 from django.views.decorators.csrf import csrf_exempt
@@ -48,6 +48,7 @@ def settings(request):
     if request.method == "POST":
         form = userSettingsForm(request.POST)
         current_settings = usersettings()
+        user = User.objects.get(userid = request.session['user'])
         if form.is_valid():
             pa = form.cleaned_data["profile_age"]
             pg = form.cleaned_data["profile_gender"]
@@ -55,27 +56,28 @@ def settings(request):
             ph = form.cleaned_data["profile_height"]
             pwg = form.cleaned_data["profile_weight_goal"]
             pwgt = form.cleaned_data["profile_weight_goal_time"]
-            for profile in Profile.objects.all():
-                if profile.user == User.objects.get(userid = request.session['user']):
-                    print(pa)
-                    if pa == None:
-                        pa = profile.age
-                    if pg == False:
-                        pg = profile.gender
-                    else:
-                        pg = not profile.gender                   
-                    if pw == None:
-                        pw = profile.weight
-                    if ph == None:
-                        ph = profile.height
-                    if pwg == None:
-                        pwg = profile.weight_goal
-                    if pwgt == None:
-                        pwgt = profile.weight_goal_time 
-                    current_settings.setAll(pa, pg, pw, ph, pwg, pwgt)
-                    current_settings.attach(profile)
-                    current_settings.notify()
-                    profile.save()                    
+            profile = Profile.objects.get(user = user)
+            diary = Diary.objects.get(profile = profile)
+            if pa == None:
+                pa = profile.age
+            if pg == False:
+                pg = profile.gender
+            else:
+                pg = not profile.gender                   
+            if pw == None:
+                pw = profile.weight
+            if ph == None:
+                ph = profile.height
+            if pwg == None:
+                pwg = profile.weight_goal
+            if pwgt == None:
+                pwgt = profile.weight_goal_time 
+            current_settings.setAll(pa, pg, pw, ph, pwg, pwgt)
+            current_settings.attach(diary.nutrition)
+            current_settings.attach(profile)
+            current_settings.notify()
+            profile.save()
+            diary.nutrition.save()                    
             return redirect("index")
         else:
             return redirect("login")
@@ -98,8 +100,10 @@ def registerProfile(request):
             vgt = form.cleaned_data["vegeterian"]
             vg = form.cleaned_data["vegan"]
             current_user = User.objects.get(userid = request.session['user'])
-            current_profile = Profile.objects.create(first_name = fn, second_name = sn, height = h, weight = w, BMI= bmiCalc(h,w), age = a, gender = g, weight_goal = wg, weight_goal_time = wgt, vegeterian = vgt, vegan = vg, user = current_user)           
-            Diary.objects.create(profile=current_profile)
+            profile = Profile.objects.create(first_name = fn, second_name = sn, height = h, weight = w, BMI= bmiCalc(h,w), age = a, gender = g, weight_goal = wg, weight_goal_time = wgt, vegeterian = vgt, vegan = vg, user = current_user)           
+            #cls, age, gender, weight, height, weightGoal, weightGoalTime, BMI):
+            nutrition = Nutrition.objects.create(age=a, gender=g, weight=w, height=h, weightGoal = wg, weightGoalTime=wgt, BMI=bmiCalc(h,w))
+            Diary.objects.create(profile=profile, nutrition = nutrition)
             return redirect("login")
     else:
         form = registerProfileForm()        
@@ -112,10 +116,9 @@ def diary(request):
         user = User.objects.get(userid=userid)
         profile = Profile.objects.get(user=user)
         diary = Diary.objects.get(profile=profile)
-        nutrition = Nutrition(profile)
-        nutrition_info = nutrition.dict_decorator(diary)(nutrition.generate_dict)
-        print(nutrition_info)
-        data = {'intake': diary.intake.all()}
+        nutrition_info = nuts.dict_decorator(diary)(nuts.generate_dict)
+        data = {'intake': diary.intake.all(),
+            'nutrition_info': nutrition_info}
     return render(request, 'diary.html', data)
 
 @csrf_exempt

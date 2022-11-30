@@ -9,5 +9,10 @@
                     <li>{{food.name}}</li>
                 {% endfor %}
             </ul>
+            <ul>
+                {% for key,value in nutrition_info %}
+                    <li>{{key}}:{{value}}</li>
+                {% endfor %}
+            </ul>>
         </body>
 </html>
