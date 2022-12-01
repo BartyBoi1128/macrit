@@ -9,11 +9,14 @@ html {
 
 body{
   font-size: 1.6rem;
-  background-color: #282c34;
+  background-color: #F5F5DC;
+  margin: 0;
 }
 
-li{
+.nav_item{
+  display: inline;
   list-style: none;
+  padding-left: 30px;
 }
 a{
   text-decoration: none;
@@ -23,14 +26,16 @@ a{
 .nav {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   height: 8vh;
   background: rgb(0,28,73);
 }
 
 .brand {
+  margin-left: 30px;
   text-transform: uppercase;
   font-weight: bold;
+  float:left;
 }
 
 .nav_menu {
@@ -77,6 +82,10 @@ a{
 
 .active {
   display: inline;
+  float: right;
+  min-width: 300px;
+  justify-content: space-between;
+  margin-right: 30px;
 }
 
 .toggle .line1 {
