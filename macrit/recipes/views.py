@@ -51,7 +51,6 @@ def recipes(request):
         recipe_name = request.POST.get('name')
         recipe = Recipe.objects.get(name=recipe_name)
         diary.intake.add(recipe)
-        print(recipe_name)
         
     recipe_list = Recipe.objects.all()
     return render(request, 'recipe.html', {'recipe_list': recipe_list})
