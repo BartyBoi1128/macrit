@@ -2,8 +2,8 @@ import datetime
 from recipes.forms import UserCreationForm, registerProfileForm, userSettingsForm
 from django.shortcuts import redirect, render
 from django.template import loader
-from recipes.models import User, Profile, Recipe, Diary, Food
-from .utils.nutrition import Nutrition
+from recipes.models import User, Profile, Recipe, Diary, Food, Nutrition
+import recipes.utils.nutrition as nuts
 from recipes.service import *
 from recipes.usersettings import *
 from django.views.decorators.csrf import csrf_exempt
@@ -17,8 +17,10 @@ def index(request):
         user = request.session['user']
     return render(request, 'index.html', {})
 
+
 def settings(request):
-    return render(request,'index.html', {})
+    return render(request, 'index.html', {})
+
 
 @csrf_exempt
 def login(request):
@@ -39,15 +41,26 @@ def login(request):
     context = {'form': form, 'verify': verify}
     return render(request, 'login.html', context)
 
+
 @csrf_exempt
 def recipes(request):
-    recipe_list = Recipe.objects.all()   
-    return render(request, 'recipe.html', {'recipe_list' : recipe_list})
+    if request.method == "POST":
+        user = User.objects.get(userid=request.session['user'])
+        profile = Profile.objects.get(user=user)
+        diary = Diary.objects.get(profile=profile)
+        recipe_name = request.POST.get('name')
+        recipe = Recipe.objects.get(name=recipe_name)
+        diary.intake.add(recipe)
+        
+    recipe_list = Recipe.objects.all()
+    return render(request, 'recipe.html', {'recipe_list': recipe_list})
+
 
 def settings(request):
     if request.method == "POST":
         form = userSettingsForm(request.POST)
         current_settings = usersettings()
+        user = User.objects.get(userid=request.session['user'])
         if form.is_valid():
             pa = form.cleaned_data["profile_age"]
             pg = form.cleaned_data["profile_gender"]
@@ -55,33 +68,35 @@ def settings(request):
             ph = form.cleaned_data["profile_height"]
             pwg = form.cleaned_data["profile_weight_goal"]
             pwgt = form.cleaned_data["profile_weight_goal_time"]
-            for profile in Profile.objects.all():
-                if profile.user == User.objects.get(userid = request.session['user']):
-                    print(pa)
-                    if pa == None:
-                        pa = profile.age
-                    if pg == False:
-                        pg = profile.gender
-                    else:
-                        pg = not profile.gender                   
-                    if pw == None:
-                        pw = profile.weight
-                    if ph == None:
-                        ph = profile.height
-                    if pwg == None:
-                        pwg = profile.weight_goal
-                    if pwgt == None:
-                        pwgt = profile.weight_goal_time 
-                    current_settings.setAll(pa, pg, pw, ph, pwg, pwgt)
-                    current_settings.attach(profile)
-                    current_settings.notify()
-                    profile.save()                    
+            profile = Profile.objects.get(user=user)
+            diary = Diary.objects.get(profile=profile)
+            if pa == None:
+                pa = profile.age
+            if pg == False:
+                pg = profile.gender
+            else:
+                pg = not profile.gender
+            if pw == None:
+                pw = profile.weight
+            if ph == None:
+                ph = profile.height
+            if pwg == None:
+                pwg = profile.weight_goal
+            if pwgt == None:
+                pwgt = profile.weight_goal_time
+            current_settings.setAll(pa, pg, pw, ph, pwg, pwgt)
+            current_settings.attach(diary.nutrition)
+            current_settings.attach(profile)
+            current_settings.notify()
+            profile.save()
+            diary.nutrition.save()
             return redirect("index")
         else:
             return redirect("login")
     else:
         form = userSettingsForm()
-        return render(request, 'settings.html', {"form":form})
+        return render(request, 'settings.html', {"form": form})
+
 
 def registerProfile(request):
     if request.method == "POST":
@@ -97,39 +112,50 @@ def registerProfile(request):
             wgt = form.cleaned_data["weight_goal_time"]
             vgt = form.cleaned_data["vegeterian"]
             vg = form.cleaned_data["vegan"]
-            current_user = User.objects.get(userid = request.session['user'])
-            current_profile = Profile.objects.create(first_name = fn, second_name = sn, height = h, weight = w, BMI= bmiCalc(h,w), age = a, gender = g, weight_goal = wg, weight_goal_time = wgt, vegeterian = vgt, vegan = vg, user = current_user)           
-            Diary.objects.create(profile=current_profile)
+            current_user = User.objects.get(userid=request.session['user'])
+            profile = Profile.objects.create(first_name=fn, second_name=sn, height=h, weight=w, BMI=bmiCalc(
+                h, w), age=a, gender=g, weight_goal=wg, weight_goal_time=wgt, vegeterian=vgt, vegan=vg, user=current_user)
+            # cls, age, gender, weight, height, weightGoal, weightGoalTime, BMI):
+            maintenance_calories = nuts.get_maintenance_calories(g, h, w, a)
+
+            needed_fat = nuts.needed_fat(maintenance_calories)
+            needed_saturates = nuts.needed_saturates(maintenance_calories)
+            needed_sugar = nuts.needed_sugar(maintenance_calories)
+            needed_protein = nuts.needed_protein(w)
+            needed_carbs = nuts.needed_carbs(maintenance_calories)
+            needed_fibre = nuts.needed_fibre(maintenance_calories)
+            nutrition = Nutrition.objects.create(maintenance_calories=maintenance_calories, needed_fat=needed_fat, needed_saturates=needed_saturates, needed_sugar=needed_sugar, needed_protein=needed_protein, needed_carbs=needed_carbs, needed_fibre=needed_fibre, needed_salt=6)
+            Diary.objects.create(profile=profile, nutrition=nutrition)
             return redirect("login")
     else:
-        form = registerProfileForm()        
-        return render(request, 'registerProfile.html', {"form":form})
+        form=registerProfileForm()
+        return render(request, 'registerProfile.html', {"form": form})
 
-@csrf_exempt
+@ csrf_exempt
 def diary(request):
     if 'user' in request.session:
-        userid = request.session['user']
-        user = User.objects.get(userid=userid)
-        profile = Profile.objects.get(user=user)
-        diary = Diary.objects.get(profile=profile)
-        nutrition = Nutrition(profile)
-        nutrition_info = nutrition.dict_decorator(diary)(nutrition.generate_dict)
+        userid=request.session['user']
+        user=User.objects.get(userid=userid)
+        profile=Profile.objects.get(user=user)
+        diary=Diary.objects.get(profile=profile)
+        nutrition_info=nuts.dict_decorator(nuts.generate_dict, diary, diary.nutrition)(nuts.generate_dict)
         print(nutrition_info)
-        data = {'intake': diary.intake.all()}
+        data={'intake': diary.intake.all(),
+            'nutrition_info': nutrition_info}
     return render(request, 'diary.html', data)
 
-@csrf_exempt
+@ csrf_exempt
 def register(request):
-    form = UserCreationForm
-    
-    #cookies = {'csrftoken'}
+    form=UserCreationForm
+
+    # cookies = {'csrftoken'}
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form=UserCreationForm(request.POST)
         if form.is_valid():
-            e_mail = request.POST.get('email', '')
-            password = request.POST.get('password1')
-            User.objects.create(email = e_mail, password = password)
-            request.session['user'] = User.objects.get(email=e_mail).userid
+            e_mail=request.POST.get('email', '')
+            password=request.POST.get('password1')
+            User.objects.create(email=e_mail, password=password)
+            request.session['user']=User.objects.get(email=e_mail).userid
             return redirect("registerProfile")
-    context = {'form': form}
+    context={'form': form}
     return render(request, 'register.html', context)
