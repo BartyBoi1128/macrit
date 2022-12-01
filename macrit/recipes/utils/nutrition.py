@@ -4,9 +4,18 @@ import numpy as np
 def dict_decorator(func, diary, nutrition):
     def inner(func):
         plain_dict = func(nutrition)
-        detailed_dict = {
-            key.replace('needed', 'consumed'): str(np.sum(np.array([getattr(food, key.replace('needed_','')) for food in diary.intake.all()]))) + "/" + str(value) for key, value in zip(plain_dict.keys(), plain_dict.values())
-        }
+        detailed_dict = dict()
+        for key, value in plain_dict.items():
+            consumed_key = key.replace('needed', 'consumed')
+            macro_key = key.replace('needed_','')
+            consumed = 0
+            for food in diary.intake.all():
+                consumed += getattr(food, macro_key)
+            detailed_dict[consumed_key] = [consumed,value]
+
+        # detailed_dict = {
+        #     key.replace('needed', 'consumed'): str(np.sum(np.array([getattr(food, key.replace('needed_','')) for food in diary.intake.all()]))) + "/" + str(value) for key, value in zip(plain_dict.keys(), plain_dict.values())
+        # }
         return detailed_dict
     return inner
     

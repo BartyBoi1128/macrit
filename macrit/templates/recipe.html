@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 {% block content%}
-<h3>Recipes</h3>
-
+<link rel="stylesheet" href="{% static 'recipe_style.css' %}">
+<h3 class = "title">Recipes</h3>
+<ul class = "recipe-list">
 {% for recipe in recipe_list %}
-<div class="card">
+<!-- <div class="card">
     <div class="card-header">
         Recipe Name : {{recipe.name}}
     </div>
@@ -23,8 +24,22 @@
             </form>
         </ul>
     </div>
-</div>
-
+</div> --> 
+    <li>
+        <div class = "recipe-item">
+            <span class = "recipe-name" id = "element">{{recipe.name}}</span>
+            <span id = "el-right">
+                <div>&#10060;</div>
+                {% for tag in recipe.tags %}
+                    
+                {% endfor %}
+                <form method="POST">
+                    <button type="submit" name="name" value="{{recipe.name}}">Add to Diary</input>
+                </form>
+            </span>
+        </div>
+    </li>
 {% endfor %}
+</ul>
 {% endblock %}
 </html>
