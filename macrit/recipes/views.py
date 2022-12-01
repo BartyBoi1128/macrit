@@ -55,21 +55,23 @@ def recipes(request):
     recipe_list = Recipe.objects.all()
     return render(request, 'recipe.html', {'recipe_list': recipe_list})
 
-
+#Settings page for changing a user's macros
 def settings(request):
     if request.method == "POST":
-        form = userSettingsForm(request.POST)
-        current_settings = usersettings()
-        user = User.objects.get(userid=request.session['user'])
+        form = userSettingsForm(request.POST) #Creation of form for changing a user's macros
+        current_settings = usersettings() #Creation of usersettings subject for observer design pattern
+        user = User.objects.get(userid=request.session['user']) #Getting the currently logged in user
         if form.is_valid():
+            #Populating of user's macros from the form
             pa = form.cleaned_data["profile_age"]
             pg = form.cleaned_data["profile_gender"]
             pw = form.cleaned_data["profile_weight"]
             ph = form.cleaned_data["profile_height"]
             pwg = form.cleaned_data["profile_weight_goal"]
             pwgt = form.cleaned_data["profile_weight_goal_time"]
-            profile = Profile.objects.get(user=user)
-            diary = Diary.objects.get(profile=profile)
+            profile = Profile.objects.get(user=user) #Get the profile of the currently logged in user
+            diary = Diary.objects.get(profile=profile) #Get the Diary of the user's profile
+            #If any of the fields in the form are not null, change them
             if pa == None:
                 pa = profile.age
             if pg == False:
@@ -84,11 +86,11 @@ def settings(request):
                 pwg = profile.weight_goal
             if pwgt == None:
                 pwgt = profile.weight_goal_time
-            current_settings.setAll(pa, pg, pw, ph, pwg, pwgt)
-            current_settings.attach(diary.nutrition)
-            current_settings.attach(profile)
-            current_settings.notify()
-            profile.save()
+            current_settings.setAll(pa, pg, pw, ph, pwg, pwgt) #Set our subject's variables from the form
+            current_settings.attach(diary.nutrition) #Attach our nutrition observer to the subject
+            current_settings.attach(profile) #Attach our profile observer to the subject
+            current_settings.notify() #Notify both our observers
+            profile.save() 
             diary.nutrition.save()
             return redirect("index")
         else:
