@@ -33,6 +33,7 @@ def generate_dict(nutrition):
 
 def get_maintenance_calories(gender, height, weight, age):
 
+    #Calculates the different amount of calories the user needs based on weight height age and gender
     if gender == True:
         #Man
         calories = 66.47 +(13.75 * weight) + (5.003 * height) - (6.755 * age)
@@ -43,26 +44,33 @@ def get_maintenance_calories(gender, height, weight, age):
 
     return calories
 
+
+#Calculate fat needed
 def needed_fat(maintenance_calories):
     return (maintenance_calories / 10)
 
 
+#Calculates saturates needed
 def needed_saturates(maintenance_calories):
     return (maintenance_calories / 10)
 
 
+#Calculates sugar needed
 def needed_sugar(maintenance_calories):
     return (maintenance_calories / 40)
 
 
+#Calculates protein needed
 def needed_protein(weight):
     return (weight * 0.36)
 
 
+#Calculates carbs needed
 def needed_carbs(maintenance_calories):
     return (maintenance_calories * 0.55 / 4)
 
 
+#Calculates fibre needed
 def needed_fibre(maintenance_calories):
     return (maintenance_calories / 1000 * 14)
 

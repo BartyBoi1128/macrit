@@ -14,6 +14,7 @@ import recipes.warning_factory as warning_factory
 
 def index(request):
     if 'user' in request.session:
+        #Creates an instance of user
         user = request.session['user']
     return render(request, 'index.html', {})
 
@@ -27,8 +28,10 @@ def login(request):
     form = UserCreationForm
     verify = 0
     if request.method == "POST":
+        #Checks if the email is valid or used already 
         form = UserCreationForm(request.POST)
         for user in User.objects.all():
+            #Check if the email and password are the same as the db
             if user.email == request.POST.get('email'):
                 if user.password == request.POST.get('password1'):
                     request.session['user'] = user.userid
@@ -47,14 +50,18 @@ def recipes(request):
     user = User.objects.get(userid=request.session['user'])
     profile = Profile.objects.get(user=user)
     diary = Diary.objects.get(profile=profile)
+    
+    #Adding a recipe to the diary if the add button is clicked
     if request.method == "POST":
         recipe_name = request.POST.get('name')
         recipe = Recipe.objects.get(name=recipe_name)
         diary.intake.add(recipe)
-        
+    
     recipe_list = Recipe.objects.all()
     macro_dict = nuts.dict_decorator(nuts.generate_dict, diary, diary.nutrition)(nuts.generate_dict)
     warning_dict = dict()
+    
+    #Checking to see if the user has broken any food limits 
     for recipe in recipe_list:
         if warning_factory.buildWarning(recipe,macro_dict) != -1:
             warning_dict[recipe.name] = warning_factory.buildWarning(recipe,macro_dict).warningMessage().replace(" ","\u00a0")
@@ -66,9 +73,18 @@ def recipes(request):
 #Settings page for changing a user's macros
 def settings(request):
     if request.method == "POST":
-        form = userSettingsForm(request.POST) #Creation of form for changing a user's macros
-        current_settings = usersettings() #Creation of usersettings subject for observer design pattern
-        user = User.objects.get(userid=request.session['user']) #Getting the currently logged in user
+        
+        #Creation of form for changing a user's macros
+        form = userSettingsForm(request.POST) 
+        
+        #Creation of usersettings subject for observer design pattern
+        
+        #Creation of usersettings subject for observer design pattern
+        current_settings = usersettings() 
+        
+        #Getting the currently logged in user
+        user = User.objects.get(userid=request.session['user']) 
+        
         if form.is_valid():
             #Populating of user's macros from the form
             pa = form.cleaned_data["profile_age"]
@@ -78,8 +94,13 @@ def settings(request):
             pwg = form.cleaned_data["profile_weight_goal"]
             pwgt = form.cleaned_data["profile_weight_goal_time"]
             t = form.cleaned_data["profile_tags"]
-            profile = Profile.objects.get(user=user) #Get the profile of the currently logged in user
-            diary = Diary.objects.get(profile=profile) #Get the Diary of the user's profile
+            
+            #Get the profile of the currently logged in user
+            profile = Profile.objects.get(user=user) 
+            
+            #Get the Diary of the user's profile
+            diary = Diary.objects.get(profile=profile) 
+            
             #If any of the fields in the form are not null, change them
             if pa == None:
                 pa = profile.age
@@ -97,12 +118,22 @@ def settings(request):
                 pwgt = profile.weight_goal_time
             if t == None:
                 t = profile.tags
-            current_settings.setAll(pa, pg, pw, ph, pwg, pwgt,t) #Set our subject's variables from the form
-            current_settings.attach(diary.nutrition) #Attach our nutrition observer to the subject
-            current_settings.attach(profile) #Attach our profile observer to the subject
-            current_settings.notify() #Notify both our observers
+                
+            #Set our subject's variables from the form
+            current_settings.setAll(pa, pg, pw, ph, pwg, pwgt,t) 
+            
+            #Attach our nutrition observer to the subject
+            current_settings.attach(diary.nutrition) 
+            
+            #Attach our profile observer to the subject
+            current_settings.attach(profile) 
+            
+            #Notify both our observers
+            current_settings.notify() 
             profile.save() 
             diary.nutrition.save()
+            
+            #Return to the index page once finished
             return redirect("index")
         else:
             return redirect("login")
@@ -115,6 +146,8 @@ def registerProfile(request):
     if request.method == "POST":
         form = registerProfileForm(request.POST)
         if form.is_valid():
+            
+            #Populating the users details from the entries
             fn = form.cleaned_data["first_name"]
             sn = form.cleaned_data["second_name"]
             h = form.cleaned_data["height"]
@@ -126,12 +159,15 @@ def registerProfile(request):
             vgt = form.cleaned_data["vegeterian"]
             vg = form.cleaned_data["vegan"]
             t = form.cleaned_data["tags"]
+            
+            #Getting the current user and creating a profile with the inputted details
             current_user = User.objects.get(userid=request.session['user'])
             profile = Profile.objects.create(first_name=fn, second_name=sn, height=h, weight=w, BMI=bmiCalc(
                 h, w), age=a, gender=g, weight_goal=wg, weight_goal_time=wgt, vegeterian=vgt, vegan=vg, user=current_user, tags=t)
             # cls, age, gender, weight, height, weightGoal, weightGoalTime, BMI):
             maintenance_calories = nuts.get_maintenance_calories(g, h, w, a)
 
+            #Performing some simple calculations
             needed_fat = nuts.needed_fat(maintenance_calories)
             needed_saturates = nuts.needed_saturates(maintenance_calories)
             needed_sugar = nuts.needed_sugar(maintenance_calories)
@@ -139,6 +175,8 @@ def registerProfile(request):
             needed_carbs = nuts.needed_carbs(maintenance_calories)
             needed_fibre = nuts.needed_fibre(maintenance_calories)
             nutrition = Nutrition.objects.create(maintenance_calories=maintenance_calories, needed_fat=needed_fat, needed_saturates=needed_saturates, needed_sugar=needed_sugar, needed_protein=needed_protein, needed_carbs=needed_carbs, needed_fibre=needed_fibre, needed_salt=6)
+            
+            #Creating a diary with the gathered information
             Diary.objects.create(profile=profile, nutrition=nutrition)
             return redirect("login")
     else:
@@ -148,6 +186,8 @@ def registerProfile(request):
 @ csrf_exempt
 def diary(request):
     if 'user' in request.session:
+        
+        #Getting the current user, profile, diary and nutrition info to display
         userid=request.session['user']
         user=User.objects.get(userid=userid)
         profile=Profile.objects.get(user=user)
@@ -166,6 +206,7 @@ def register(request):
     if request.method == "POST":
         form=UserCreationForm(request.POST)
         if form.is_valid():
+            #Gets email and password from the form and creates a user
             e_mail=request.POST.get('email', '')
             password=request.POST.get('password1')
             User.objects.create(email=e_mail, password=password)

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from recipes.models import User as wagwan
+from recipes.models import User as userObj
 from django.core.exceptions import ValidationError
 
 #self.profile_age, self.profile_gender, self.profile_weight,self.profile_height,self.profile_weight_goal,self.profile_weight_goal_time, self.profile_bmi
@@ -28,9 +28,11 @@ class registerProfileForm(forms.Form):
     tags = forms.CharField(label = "Allergies/HealthConditions", required=False)
 
 class UserCreationForm(UserCreationForm):
+    #Checking to see if the email is a valid email
     def validate_email(value):
-        for user in wagwan.objects.all():
+        for user in userObj.objects.all():
                 if user.email == value:
+                    #Error handling for an email already existing
                     raise ValidationError("Email already exists")
 
     email = forms.EmailField(required=True, validators=[validate_email])

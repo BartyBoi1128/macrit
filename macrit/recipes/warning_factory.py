@@ -1,6 +1,7 @@
 from recipes.warning import glutenWarning, vegetarianWarning, macrosWarning
 from recipes.models import Food
 
+#Checker for all of the macros that you are not going over
 def check_macros(dict, food : Food):
     if food.calories > dict["consumed_calories"][1] - dict["consumed_calories"][0]:
         return "calories"
@@ -21,6 +22,7 @@ def check_macros(dict, food : Food):
     else:
         return -1
     
+#Checking if any of the food is outside of what the user can have
 def buildWarning(food : Food, macro_dict):
     macroTypes = ["calories", "protein", "carbs", "fat", "sugar", "fibre", "salt", "saturates"]
     warningType = check_macros(macro_dict, food)

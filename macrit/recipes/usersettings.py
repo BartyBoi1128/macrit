@@ -28,30 +28,37 @@ class usersettings:
         for observer in self._observers:
             observer.update(self.profile_age, self.profile_gender, self.profile_weight,self.profile_height,self.profile_weight_goal,self.profile_weight_goal_time, self.profile_bmi, self.profile_tags)
 
-    #Setters
+    #Setter for a new tag
     def setTag(self, newTag):
         self.profile_tags = newTag
 
+    #Setter for age
     def setAge(self, newAge):
         self.profile_age = newAge
 
+    #Setter for gender
     def setGender(self, newGender):
         self.profile_gender = newGender
 
+    #Setter for weight
     def setWeight(self,newWeight):
         self.profile_weight = newWeight
         self.profile_bmi = bmiCalc(self.profile_height, self.profile_weight)
 
+    #Setter for height
     def setHeight(self, newHeight):
         self.profile_height = newHeight
         self.profile_bmi = bmiCalc(self.profile_height, self.profile_weight)
 
+    #Setter for Weight goal
     def setWeightGoal(self, newGoal):
         self.profile_weight_goal = newGoal
 
+    #Setter for time to achieve the weight goal
     def setWeightGoalTime(self, newGoalTime):
         self.profile_weight_goal_time = newGoalTime
 
+    #Setter for everything
     def setAll(self, newAge, newGender, newWeight, newHeight, newGoal, newGoalTime, tags):
         self.profile_age = newAge
         self.profile_gender = newGender
@@ -63,24 +70,30 @@ class usersettings:
         if (self.profile_height != None and self.profile_weight != None):
             self.profile_bmi = bmiCalc(self.profile_height,self.profile_weight)
 
-    #Getters
+    #Getter for the tag
     def getTag(self):
         return self.profile_tags
-
+    
+    #Getter for the age
     def getAge(self):
         return self.profile_age
 
+    #Getter for the gender
     def getGender(self):
         return self.profile_gender
 
+    #Getter for the weitght
     def getWeight(self):
         return self.profile_weight
 
+    #Getter for the height
     def getHeight(self):
         return self.profile_height
 
+    #Getter for the weight goal
     def getWeightGoal(self):
         return self.getWeightGoal
     
+    #Getter for time to achieve the weight goal
     def getWeightGoalTime(self):
         return self.getWeightGoalTime
