@@ -14,7 +14,11 @@ from django.core.exceptions import ValidationError
 
 def index(request):
     if 'user' in request.session:
-        user = request.session['user']
+        userid = request.session['user']
+        user = User.objects.get(userid=userid)
+        # if user.presentState() == 'unsubscribed':
+        #     return redirect("subscribe")
+         
     return render(request, 'index.html', {})
 
 
@@ -31,8 +35,11 @@ def login(request):
         for user in User.objects.all():
             if user.email == request.POST.get('email'):
                 if user.password == request.POST.get('password1'):
-                    request.session['user'] = user.userid
-                    return redirect("index")
+                    request.session['user'] = user.userid  
+                    if user.presentState() == 'subscribed':
+                        return redirect("index")
+                    else:                  
+                        return redirect("subscribe")
                 else:
                     verify = 1
                     break
@@ -44,14 +51,18 @@ def login(request):
 
 @csrf_exempt
 def recipes(request):
-    if request.method == "POST":
-        user = User.objects.get(userid=request.session['user'])
-        profile = Profile.objects.get(user=user)
-        diary = Diary.objects.get(profile=profile)
-        recipe_name = request.POST.get('name')
-        recipe = Recipe.objects.get(name=recipe_name)
-        diary.intake.add(recipe)
+    user = User.objects.get(userid=request.session['user'])
+    if user.presentState() == 'subscribed':
         
+        if request.method == "POST":
+            profile = Profile.objects.get(user=user)
+            diary = Diary.objects.get(profile=profile)
+            recipe_name = request.POST.get('name')
+            recipe = Recipe.objects.get(name=recipe_name)
+            diary.intake.add(recipe)
+    else:
+        return redirect("subscribe")
+
     recipe_list = Recipe.objects.all()
     return render(request, 'recipe.html', {'recipe_list': recipe_list})
 
@@ -138,12 +149,15 @@ def diary(request):
     if 'user' in request.session:
         userid=request.session['user']
         user=User.objects.get(userid=userid)
-        profile=Profile.objects.get(user=user)
-        diary=Diary.objects.get(profile=profile)
-        nutrition_info=nuts.dict_decorator(nuts.generate_dict, diary, diary.nutrition)(nuts.generate_dict)
-        print(nutrition_info)
-        data={'intake': diary.intake.all(),
-            'nutrition_info': nutrition_info}
+        if user.presentState() == "subscribed":
+            profile=Profile.objects.get(user=user)
+            diary=Diary.objects.get(profile=profile)
+            nutrition_info=nuts.dict_decorator(nuts.generate_dict, diary, diary.nutrition)(nuts.generate_dict)
+            print(nutrition_info)
+            data={'intake': diary.intake.all(),
+                'nutrition_info': nutrition_info}
+        else:
+            redirect('subscribe')
     return render(request, 'diary.html', data)
 
 @ csrf_exempt
@@ -161,3 +175,19 @@ def register(request):
             return redirect("registerProfile")
     context={'form': form}
     return render(request, 'register.html', context)
+
+def subscribe(request):
+    if 'user' in request.session:
+        userid = request.session['user']
+        user = User.objects.get(userid=userid)
+        if request.POST.get('Subscribe') == 'Subscribe':
+            #change the state of the user to subscribed
+            user.subscribe()
+            return redirect("index")
+            
+        if request.POST.get('UnSubscribe') == 'Unsubscribe':
+            #change the state of the user to unsubscribed
+            user.unsubscribe()
+            return redirect("index")
+            
+    return render(request, 'subscribe.html')

@@ -25,7 +25,8 @@ class User(models.Model):
 
     # Get the present state
     def presentState(self):
-        print(f"Elevator is in {type(self._state).__name__}")
+        currState = {type(self._state).__name__}
+        return currState
 
     # Methods to execute functionality. These are called depending on the state of the object and when they are called
     def subscribe(self):
@@ -84,7 +85,6 @@ class Profile(models.Model):
 class Subscribe(State):
     # if up button is pushed, move upwards then it changes its state to second floor.
     def unsubscribe(self) -> None:
-        print("You have unsubscribed")
         self.user.setUser(Unsubscribe())
 
     def subscribe(self) -> None:
@@ -99,7 +99,6 @@ class Unsubscribe(State):
 
     def unsubscribe(self) -> None:
         print("You have already unsubscribed")
-        # output error message
 
 
 class Food(models.Model):
