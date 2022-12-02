@@ -69,10 +69,10 @@ def recipes(request):
     
     #Checking to see if the user has broken any food limits 
     for recipe in recipe_list:
-        if warning_factory.buildWarning(recipe,macro_dict) != -1:
-            warning_dict[recipe.name] = warning_factory.buildWarning(recipe,macro_dict).warningMessage().replace(" ","\u00a0")
+        if warning_factory.buildWarning(recipe,macro_dict, profile) != -1:
+            warning_dict[recipe.name] = warning_factory.buildWarning(recipe,macro_dict,profile).warningMessage().replace(" ","\u00a0")
         else:
-            warning_dict[recipe.name] = warning_factory.buildWarning(recipe,macro_dict)
+            warning_dict[recipe.name] = warning_factory.buildWarning(recipe,macro_dict,profile)
     print(warning_dict)
     # else:
     #     return redirect("subscribe")
