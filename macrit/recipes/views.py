@@ -77,6 +77,7 @@ def settings(request):
             ph = form.cleaned_data["profile_height"]
             pwg = form.cleaned_data["profile_weight_goal"]
             pwgt = form.cleaned_data["profile_weight_goal_time"]
+            t = form.cleaned_data["profile_tags"]
             profile = Profile.objects.get(user=user) #Get the profile of the currently logged in user
             diary = Diary.objects.get(profile=profile) #Get the Diary of the user's profile
             #If any of the fields in the form are not null, change them
@@ -94,7 +95,9 @@ def settings(request):
                 pwg = profile.weight_goal
             if pwgt == None:
                 pwgt = profile.weight_goal_time
-            current_settings.setAll(pa, pg, pw, ph, pwg, pwgt) #Set our subject's variables from the form
+            if t == None:
+                t = profile.tags
+            current_settings.setAll(pa, pg, pw, ph, pwg, pwgt,t) #Set our subject's variables from the form
             current_settings.attach(diary.nutrition) #Attach our nutrition observer to the subject
             current_settings.attach(profile) #Attach our profile observer to the subject
             current_settings.notify() #Notify both our observers
@@ -122,9 +125,10 @@ def registerProfile(request):
             wgt = form.cleaned_data["weight_goal_time"]
             vgt = form.cleaned_data["vegeterian"]
             vg = form.cleaned_data["vegan"]
+            t = form.cleaned_data["tags"]
             current_user = User.objects.get(userid=request.session['user'])
             profile = Profile.objects.create(first_name=fn, second_name=sn, height=h, weight=w, BMI=bmiCalc(
-                h, w), age=a, gender=g, weight_goal=wg, weight_goal_time=wgt, vegeterian=vgt, vegan=vg, user=current_user)
+                h, w), age=a, gender=g, weight_goal=wg, weight_goal_time=wgt, vegeterian=vgt, vegan=vg, user=current_user, tags=t)
             # cls, age, gender, weight, height, weightGoal, weightGoalTime, BMI):
             maintenance_calories = nuts.get_maintenance_calories(g, h, w, a)
 
@@ -169,3 +173,4 @@ def register(request):
             return redirect("registerProfile")
     context={'form': form}
     return render(request, 'register.html', context)
+    

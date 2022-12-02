@@ -72,7 +72,7 @@ class Profile(models.Model):
         return self.first_name + ' ' + self.second_name
 
 	#Update function that gets called by our "usersettings" subject
-    def update(self, age, gender, height, weight, weight_goal, weight_goal_time, BMI):
+    def update(self, age, gender, height, weight, weight_goal, weight_goal_time, BMI, tags):
         self.age = age
         self.gender = gender
         self.height = height
@@ -80,6 +80,7 @@ class Profile(models.Model):
         self.weight_goal = weight_goal
         self.weight_goal_time = weight_goal_time
         self.BMI = bmiCalc(height, weight)
+        self.tags = tags
 
 
 class Subscribe(State):
@@ -130,7 +131,7 @@ class Nutrition(models.Model):
     needed_fibre = models.FloatField()
     needed_salt = models.FloatField(default=6)
 
-    def update(self, age, gender, weight, height, weightGoal, weightGoalTime, BMI):
+    def update(self, age, gender, weight, height, weightGoal, weightGoalTime, BMI, tags):
         self.maintenance_calories = nutrition.get_maintenance_calories(
             gender, height, weight, age)
         self.needed_fat = nutrition.needed_fat(self.maintenance_calories)

@@ -12,6 +12,7 @@ class userSettingsForm(forms.Form):
     profile_height = forms.FloatField(label= "Height", required=False)
     profile_weight_goal = forms.FloatField(label= "Weight Goal", required=False)
     profile_weight_goal_time = forms.DateField(label= "Weight Goal Time", required=False)
+    profile_tags = forms.CharField(label= "Allergies/HealthConditions", required=False)
 
 class registerProfileForm(forms.Form):
     first_name = forms.CharField(label = "First Name", max_length=50)
@@ -24,6 +25,7 @@ class registerProfileForm(forms.Form):
     weight_goal_time = forms.DateField(label = "Weight Goal Date")
     vegeterian = forms.BooleanField(label= "Are you vegeterian?", required=False)
     vegan = forms.BooleanField(label= "Are you vegan?", required=False)
+    tags = forms.CharField(label = "Allergies/HealthConditions", required=False)
 
 class UserCreationForm(UserCreationForm):
     def validate_email(value):
