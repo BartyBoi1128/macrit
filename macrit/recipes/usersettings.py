@@ -12,6 +12,7 @@ class usersettings:
         self.profile_weight_goal_time = None
         self.profile_age = None
         self.profile_gender = None
+        self.profile_tags = None
         if (self.profile_height != None and self.profile_weight != None):
             self.profile_bmi = bmiCalc(usersettings.profile_height,usersettings.profile_weight)
 
@@ -25,9 +26,12 @@ class usersettings:
     #Function to notify our observers about the changes made in these specific variables using the update function within our observers
     def notify(self):
         for observer in self._observers:
-            observer.update(self.profile_age, self.profile_gender, self.profile_weight,self.profile_height,self.profile_weight_goal,self.profile_weight_goal_time, self.profile_bmi)
+            observer.update(self.profile_age, self.profile_gender, self.profile_weight,self.profile_height,self.profile_weight_goal,self.profile_weight_goal_time, self.profile_bmi, self.profile_tags)
 
     #Setters
+    def setTag(self, newTag):
+        self.profile_tags = newTag
+
     def setAge(self, newAge):
         self.profile_age = newAge
 
@@ -48,17 +52,21 @@ class usersettings:
     def setWeightGoalTime(self, newGoalTime):
         self.profile_weight_goal_time = newGoalTime
 
-    def setAll(self, newAge, newGender, newWeight, newHeight, newGoal, newGoalTime):
+    def setAll(self, newAge, newGender, newWeight, newHeight, newGoal, newGoalTime, tags):
         self.profile_age = newAge
         self.profile_gender = newGender
         self.profile_weight = newWeight
         self.profile_height = newHeight
         self.profile_weight_goal = newGoal
         self.profile_weight_goal_time = newGoalTime
+        self.profile_tags = tags
         if (self.profile_height != None and self.profile_weight != None):
             self.profile_bmi = bmiCalc(self.profile_height,self.profile_weight)
 
     #Getters
+    def getTag(self):
+        return self.profile_tags
+
     def getAge(self):
         return self.profile_age
 
