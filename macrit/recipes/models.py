@@ -9,6 +9,7 @@ class User(models.Model):
     password = models.CharField(max_length=50)
     email = models.EmailField(max_length=254)
 
+    #Create function for setting the user to Unsubscribe when a new user is created
     def create(cls, userid, password, email):
         cls.setUser(Unsubscribe())
 
@@ -17,7 +18,7 @@ class User(models.Model):
     def __str__(self):
         return str(self.userid) + " " + self.email
 
-    # Changes the state of the object
+    # Changes the state of the user
     def setUser(self, state: State):
         self._state = state
         self._state.user = self
@@ -33,12 +34,13 @@ class User(models.Model):
     def unsubscribe(self):
         self._state.unsubscribe()
 
-# Common state class for all states to be called
+# Common state class for the states to be called
 class State(ABC):
     @property
     def user(self) -> User:
         return self._user
 
+#Setter for the user to initialise
     @user.setter
     def user(self, user: User) -> None:
         self._user = user
@@ -81,13 +83,15 @@ class Profile(models.Model):
         self.BMI = bmiCalc(height, weight)
         self.tags = tags
 
-
+#These are the concrete states
+#There are 2 states to the user when they are subscribed and unsubscribed
 class Subscribe(State):
     # if up button is pushed, move upwards then it changes its state to second floor.
     def unsubscribe(self) -> None:
         print("You have unsubscribed")
         self.user.setUser(Unsubscribe())
 
+    #if the user tries to subscribe when they are already subscribed nothing will happen
     def subscribe(self) -> None:
         print("You are already subscribed")
 
@@ -98,6 +102,7 @@ class Unsubscribe(State):
         print("You have subscribed")
         self.user.setUser(Subscribe())
 
+    #if the user tries to unsubscribe when they are already unsubscribed nothing will happen
     def unsubscribe(self) -> None:
         print("You have already unsubscribed")
         # output error message

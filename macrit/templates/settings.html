@@ -1,5 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
+{% block content %}
     <h3>Edit your profile</h3>
 
     <form method="POST", action="">
@@ -7,4 +7,4 @@
         {{form.as_p}}
         <button type = "submit", name="save"> Save </button>
     </form>
-</html>
+{% endblock %}
