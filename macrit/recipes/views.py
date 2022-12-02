@@ -44,10 +44,10 @@ def login(request):
 
 @csrf_exempt
 def recipes(request):
+    user = User.objects.get(userid=request.session['user'])
+    profile = Profile.objects.get(user=user)
+    diary = Diary.objects.get(profile=profile)
     if request.method == "POST":
-        user = User.objects.get(userid=request.session['user'])
-        profile = Profile.objects.get(user=user)
-        diary = Diary.objects.get(profile=profile)
         recipe_name = request.POST.get('name')
         recipe = Recipe.objects.get(name=recipe_name)
         diary.intake.add(recipe)
