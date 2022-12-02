@@ -1,6 +1,5 @@
 from __future__ import annotations
 from django.db import models
-from recipes.service import *
 import recipes.utils.nutrition as nutrition
 from abc import ABC, abstractmethod
 
@@ -63,7 +62,7 @@ class Profile(models.Model):
     gender = models.BooleanField(default=False)
     weight_goal = models.FloatField()
     weight_goal_time = models.DateField()
-    vegeterian = models.BooleanField(default=False)
+    vegetarian = models.BooleanField(default=False)
     vegan = models.BooleanField(default=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
     tags = models.CharField(max_length=254, null=True, blank=True)

@@ -1,4 +1,7 @@
-import numpy as np
+def BMI_calc(height, weight):
+    height = height * 0.01
+    bmi = (weight / (height*height))
+    return bmi
 
     # Decorator that changes every value of the dictionary to be formatted as consumed/needed
 def dict_decorator(func, diary, nutrition):
@@ -12,10 +15,6 @@ def dict_decorator(func, diary, nutrition):
             for food in diary.intake.all():
                 consumed += getattr(food, macro_key)
             detailed_dict[consumed_key] = (consumed , value)
-
-        # detailed_dict = {
-        #     key.replace('needed', 'consumed'): str(np.sum(np.array([getattr(food, key.replace('needed_','')) for food in diary.intake.all()]))) + "/" + str(value) for key, value in zip(plain_dict.keys(), plain_dict.values())
-        # }
         return detailed_dict
     return inner
     
@@ -39,7 +38,7 @@ def get_maintenance_calories(gender, height, weight, age):
 
     else:
         #Woman
-        calories = 655.1 +(9.563 * weight) + (1.850  * height) - (4.676 * age)
+        calories = 65.51 +(9.563 * weight) + (1.850  * height) - (4.676 * age)
 
     return calories
 

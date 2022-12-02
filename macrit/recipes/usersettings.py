@@ -1,5 +1,5 @@
-from recipes.service import *
 from recipes.models import *
+from recipes.utils.nutrition import BMI_calc
 
 #Initiliaze our usersettings subject for observer design pattern
 #usersettings has a set of observers as well as variables that will be updated for notifying our observers

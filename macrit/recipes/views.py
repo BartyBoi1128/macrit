@@ -3,8 +3,7 @@ from recipes.forms import UserCreationForm, registerProfileForm, userSettingsFor
 from django.shortcuts import redirect, render
 from django.template import loader
 from recipes.models import User, Profile, Recipe, Diary, Food, Nutrition
-import recipes.utils.nutrition as nuts
-from recipes.service import *
+from recipes.utils.nutrition import BMI_calc, dict_decorator, generate_dict
 from recipes.usersettings import *
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
@@ -44,23 +43,23 @@ def login(request):
 
 @csrf_exempt
 def recipes(request):
+    user = User.objects.get(userid=request.session['user'])
+    profile = Profile.objects.get(user=user)
+    diary = Diary.objects.get(profile=profile)
+
     if request.method == "POST":
-        user = User.objects.get(userid=request.session['user'])
-        profile = Profile.objects.get(user=user)
-        diary = Diary.objects.get(profile=profile)
         recipe_name = request.POST.get('name')
         recipe = Recipe.objects.get(name=recipe_name)
         diary.intake.add(recipe)
         
     recipe_list = Recipe.objects.all()
-    macro_dict = nuts.dict_decorator(nuts.generate_dict, diary, diary.nutrition)(nuts.generate_dict)
+    macro_dict = dict_decorator(generate_dict, diary, diary.nutrition)(generate_dict)
     warning_dict = dict()
     for recipe in recipe_list:
         if warning_factory.buildWarning(recipe,macro_dict) != -1:
             warning_dict[recipe.name] = warning_factory.buildWarning(recipe,macro_dict).warningMessage().replace(" ","\u00a0")
         else:
             warning_dict[recipe.name] = warning_factory.buildWarning(recipe,macro_dict)
-    print(warning_dict)
     return render(request, 'recipe.html', {'recipe_list': recipe_list, 'warning_dict': warning_dict})
 
 #Settings page for changing a user's macros
@@ -130,14 +129,14 @@ def registerProfile(request):
             profile = Profile.objects.create(first_name=fn, second_name=sn, height=h, weight=w, BMI=bmiCalc(
                 h, w), age=a, gender=g, weight_goal=wg, weight_goal_time=wgt, vegeterian=vgt, vegan=vg, user=current_user, tags=t)
             # cls, age, gender, weight, height, weightGoal, weightGoalTime, BMI):
-            maintenance_calories = nuts.get_maintenance_calories(g, h, w, a)
+            maintenance_calories = get_maintenance_calories(g, h, w, a)
 
-            needed_fat = nuts.needed_fat(maintenance_calories)
-            needed_saturates = nuts.needed_saturates(maintenance_calories)
-            needed_sugar = nuts.needed_sugar(maintenance_calories)
-            needed_protein = nuts.needed_protein(w)
-            needed_carbs = nuts.needed_carbs(maintenance_calories)
-            needed_fibre = nuts.needed_fibre(maintenance_calories)
+            needed_fat = needed_fat(maintenance_calories)
+            needed_saturates = needed_saturates(maintenance_calories)
+            needed_sugar = needed_sugar(maintenance_calories)
+            needed_protein = needed_protein(w)
+            needed_carbs = needed_carbs(maintenance_calories)
+            needed_fibre = needed_fibre(maintenance_calories)
             nutrition = Nutrition.objects.create(maintenance_calories=maintenance_calories, needed_fat=needed_fat, needed_saturates=needed_saturates, needed_sugar=needed_sugar, needed_protein=needed_protein, needed_carbs=needed_carbs, needed_fibre=needed_fibre, needed_salt=6)
             Diary.objects.create(profile=profile, nutrition=nutrition)
             return redirect("login")
@@ -152,8 +151,7 @@ def diary(request):
         user=User.objects.get(userid=userid)
         profile=Profile.objects.get(user=user)
         diary=Diary.objects.get(profile=profile)
-        nutrition_info=nuts.dict_decorator(nuts.generate_dict, diary, diary.nutrition)(nuts.generate_dict)
-        print(nutrition_info)
+        nutrition_info=dict_decorator(generate_dict, diary, diary.nutrition)(generate_dict)
         data={'intake': diary.intake.all(),
             'nutrition_info': nutrition_info}
     return render(request, 'diary.html', data)
