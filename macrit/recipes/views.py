@@ -35,6 +35,10 @@ def login(request):
             if user.email == request.POST.get('email'):
                 if user.password == request.POST.get('password1'):
                     request.session['user'] = user.userid
+                    # if user.presentState() == 'subscribed':
+                    #     return redirect("index")
+                    # else:                  
+                    #     return redirect("subscribe")
                     return redirect("index")
                 else:
                     verify = 1
@@ -50,6 +54,8 @@ def recipes(request):
     user = User.objects.get(userid=request.session['user'])
     profile = Profile.objects.get(user=user)
     diary = Diary.objects.get(profile=profile)
+    
+    # if user.presentState() == 'subscribed':
     
     #Adding a recipe to the diary if the add button is clicked
     if request.method == "POST":
@@ -68,6 +74,8 @@ def recipes(request):
         else:
             warning_dict[recipe.name] = warning_factory.buildWarning(recipe,macro_dict)
     print(warning_dict)
+    # else:
+    #     return redirect("subscribe")
     return render(request, 'recipe.html', {'recipe_list': recipe_list, 'warning_dict': warning_dict})
 
 #Settings page for changing a user's macros
@@ -190,12 +198,15 @@ def diary(request):
         #Getting the current user, profile, diary and nutrition info to display
         userid=request.session['user']
         user=User.objects.get(userid=userid)
+         # if user.presentState() == "subscribed":
         profile=Profile.objects.get(user=user)
         diary=Diary.objects.get(profile=profile)
         nutrition_info=nuts.dict_decorator(nuts.generate_dict, diary, diary.nutrition)(nuts.generate_dict)
         print(nutrition_info)
         data={'intake': diary.intake.all(),
             'nutrition_info': nutrition_info}
+        # else:
+        #     redirect('subscribe')
     return render(request, 'diary.html', data)
 
 @ csrf_exempt
@@ -215,3 +226,23 @@ def register(request):
     context={'form': form}
     return render(request, 'register.html', context)
     
+    
+def subscribe(request):
+    if 'user' in request.session:
+        userid = request.session['user']
+        user = User.objects.get(userid=userid)
+        if request.POST.get('Subscribe') == 'Subscribe':
+            
+            #change the state of the user to subscribed
+            #user.subscribe()  
+             
+            return redirect("index")
+            
+        if request.POST.get('UnSubscribe') == 'UnSubscribe':
+            
+            #change the state of the user to unsubscribed
+            #user.unsubscribe()
+            
+            return redirect("subscribe")
+            
+    return render(request, 'subscribe.html')
