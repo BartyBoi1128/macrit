@@ -8,7 +8,7 @@ from recipes.service import *
 from recipes.usersettings import *
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ValidationError
-
+import recipes.warning_factory as warning_factory
 
 # Create your views here.
 
@@ -53,7 +53,15 @@ def recipes(request):
         diary.intake.add(recipe)
         
     recipe_list = Recipe.objects.all()
-    return render(request, 'recipe.html', {'recipe_list': recipe_list})
+    macro_dict = nuts.dict_decorator(nuts.generate_dict, diary, diary.nutrition)(nuts.generate_dict)
+    warning_dict = dict()
+    for recipe in recipe_list:
+        if warning_factory.buildWarning(recipe,macro_dict) != -1:
+            warning_dict[recipe.name] = warning_factory.buildWarning(recipe,macro_dict).warningMessage().replace(" ","\u00a0")
+        else:
+            warning_dict[recipe.name] = warning_factory.buildWarning(recipe,macro_dict)
+    print(warning_dict)
+    return render(request, 'recipe.html', {'recipe_list': recipe_list, 'warning_dict': warning_dict})
 
 #Settings page for changing a user's macros
 def settings(request):

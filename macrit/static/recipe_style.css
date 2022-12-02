@@ -1,0 +1,39 @@
+.recipe-list {
+    margin: 1em 1em 1em;
+    padding: 0;
+    min-height: 18em;
+    border: 1px solid #aaa;
+    background: white;
+    
+    max-height: 18em;
+    overflow-y: auto;
+  }
+
+.title {
+    margin-left: 1em;
+}
+
+/* .recipe-item > * {
+    display: inline-block;
+    margin-bottom: 1em;
+    vertical-align: top;
+} */
+.recipe-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 1em;
+}
+#el-right {
+    float: right;
+    display: flex;
+    align-items: center;
+}
+
+#el-right > * {
+    margin-left: 1em;
+}
+
+.tick {
+    color: #00ff00;
+}

@@ -66,6 +66,7 @@ class Profile(models.Model):
     vegeterian = models.BooleanField(default=False)
     vegan = models.BooleanField(default=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    tags = models.CharField(max_length=254, null=True, blank=True)
 
     def __str__(self):
         return self.first_name + ' ' + self.second_name
@@ -113,6 +114,7 @@ class Food(models.Model):
     protein = models.FloatField()
     carbs = models.FloatField()
     fibre = models.FloatField()
+    tags = models.CharField(max_length=254, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -157,7 +159,6 @@ class ShoppingList(models.Model):
 class Recipe(Food):
     ingredients = models.ManyToManyField(Food, related_name='+')
     instructions = models.TextField()
-    tags = models.CharField(max_length=254)
 
     def __str__(self):
         return self.name
