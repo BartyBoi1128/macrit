@@ -182,10 +182,11 @@ def subscribe(request):
         user = User.objects.get(userid=userid)
         if request.POST.get('Subscribe') == 'Subscribe':
             #change the state of the user to subscribed
+            
             user.subscribe()
             return redirect("index")
             
-        if request.POST.get('UnSubscribe') == 'Unsubscribe':
+        if request.POST.get('UnSubscribe') == 'UnSubscribe':
             #change the state of the user to unsubscribed
             user.unsubscribe()
             return redirect("index")

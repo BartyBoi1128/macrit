@@ -9,19 +9,26 @@ class User(models.Model):
     userid = models.IntegerField(primary_key=True)
     password = models.CharField(max_length=50)
     email = models.EmailField(max_length=254)
-
-    def create(cls, userid, password, email):
-        cls.setUser(Unsubscribe())
-
-        return cls(userid=userid, email=email, password=password)
+    
+    _state = None
+    
+    # def __init__(self, state: State, *args, **kwargs) -> None:
+    #     self.setState(state)
+    
+    
+    def create(self, userid, password, email):
+        self.setState(Unsubscribed())
+        self.tragic = 9
+        self.save()
+        return self(userid=userid, email=email, password=password)
 
     def __str__(self):
         return str(self.userid) + " " + self.email
 
     # Changes the state of the object
-    def setUser(self, state: State):
+    def setState(self, state: State):
         self._state = state
-        self._state.user = self
+        self._state._user = self
 
     # Get the present state
     def presentState(self):
@@ -32,11 +39,15 @@ class User(models.Model):
     def subscribe(self):
         self._state.subscribe()
 
-    def unsubscribe(self):
-        self._state.unsubscribe()
+    def unsubscribed(self):
+        self._state.unsubscribed()
 
 # Common state class for all states to be called
 class State(ABC):
+    
+    # def __init__(self) -> None:
+    #     self._user = None
+    
     @property
     def user(self) -> User:
         return self._user
@@ -50,9 +61,29 @@ class State(ABC):
         pass
 
     @abstractmethod
-    def unsubscribe(self) -> None:
+    def unsubscribed(self) -> None:
         pass
 
+
+class Subscribe(State):
+    # if up button is pushed, move upwards then it changes its state to second floor.
+    def unsubscribed(self) -> None:
+        self._user.setState(Unsubscribed())
+
+    def subscribe(self) -> None:
+        print("You are already subscribed")
+
+
+class Unsubscribed(State):
+    # if up button is pushed, move upwards then it changes its state to second floor.
+    def subscribe(self) -> None:
+        print("You have subscribed")
+        self._user.setState(Subscribe())
+
+    def unsubscribed(self) -> None:
+        print("You have already unsubscribed")
+       
+        
 #Profile model, with a one to one relationship with user as every profile will have a user
 class Profile(models.Model):
     first_name = models.CharField(max_length=50)
@@ -80,26 +111,6 @@ class Profile(models.Model):
         self.weight_goal = weight_goal
         self.weight_goal_time = weight_goal_time
         self.BMI = bmiCalc(height, weight)
-
-
-class Subscribe(State):
-    # if up button is pushed, move upwards then it changes its state to second floor.
-    def unsubscribe(self) -> None:
-        self.user.setUser(Unsubscribe())
-
-    def subscribe(self) -> None:
-        print("You are already subscribed")
-
-
-class Unsubscribe(State):
-    # if up button is pushed, move upwards then it changes its state to second floor.
-    def subscribe(self) -> None:
-        print("You have subscribed")
-        self.user.setUser(Subscribe())
-
-    def unsubscribe(self) -> None:
-        print("You have already unsubscribed")
-
 
 class Food(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
