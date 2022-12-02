@@ -11,7 +11,7 @@ def dict_decorator(func, diary, nutrition):
             consumed = 0
             for food in diary.intake.all():
                 consumed += getattr(food, macro_key)
-            detailed_dict[consumed_key] = [consumed,value]
+            detailed_dict[consumed_key] = (consumed , value)
 
         # detailed_dict = {
         #     key.replace('needed', 'consumed'): str(np.sum(np.array([getattr(food, key.replace('needed_','')) for food in diary.intake.all()]))) + "/" + str(value) for key, value in zip(plain_dict.keys(), plain_dict.values())

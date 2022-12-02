@@ -33,3 +33,7 @@
 #el-right > * {
     margin-left: 1em;
 }
+
+.tick {
+    color: #00ff00;
+}
